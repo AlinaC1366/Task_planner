@@ -26,6 +26,12 @@
 - changedById - Cheie Externă (FK) la Users(id). Utilizatorul care a efectuat tranziția
 - changedAt - Momentul schimbării
 
+## Tabela Projects
+- id - Cheie Primară (PK), identificator unic al Proiectului
+- name - Numele Proiectului
+- description - Descriere opțională
+- managerId: (UUID) Cheie Externă (FK) la Users(id), indicând Managerul responsabil cu Proiectul
+- createdAt: (TIMESTAMP) Momentul creării
 
 ## Interpretarea Relațiilor Cheie
 
@@ -41,3 +47,10 @@ Relația Ierarhică (Users —> Users):
 ### Relația de Istoric (TaskHistory —> Tasks / Users):
 - Tip: Două relații N:1
 - Funcție: Leagă fiecare schimbare de stare la Task-ul afectat și la Utilizatorul care a inițiat acea schimbare, asigurând urmărirea tuturor schimbărilor
+
+### Relația de Gruparea (Projects —> Tasks)
+- Tip : O relație 1:N
+- Funcție : Care permite unui singur Proiect să conțină multiple Task-uri
+
+
+
