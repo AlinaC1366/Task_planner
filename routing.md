@@ -1,22 +1,23 @@
 # Rutele Complete ale Aplicației de Task Management
 ## I. Rute Back-End 
-- POST /api/v1/auth/login: (Public) Permite oricui să se autentifice și să primească token-ul de acces
+- POST /auth/login: (Public) Autentificare cu email și parolă. Returnează Token JWT.
 - GET /api/v1/users: (Doar Admin) Afișează lista tuturor utilizatorilor 
 - POST /api/v1/users: (Doar Admin) Creează un utilizator nou, specificând rolul (Manager sau Executant)
 - PUT /api/v1/users/:id: (Doar Admin) Editează detaliile unui utilizator existent
 - DELETE /api/v1/users/:id: (Doar Admin) Șterge definitiv un utilizator
-- PUT /api/v1/users/:id/manager: (Doar Admin) Oferă sau modifică managerul unui Executant
-- GET /api/v1/users/me: (Autentificat) Afișează detaliile profilului utilizatorului curent
-- POST /api/v1/tasks: (Doar Manager) Creează o sarcină nouă, care începe automat în starea OPEN
-- GET /api/v1/tasks/all: (Doar Manager) Permite vizualizarea tuturor task-urilor din sistem
-- GET /api/v1/tasks/my: (Doar Executant) Afișează task-urile care sunt alocate direct Executantului care face cererea
-- GET /api/v1/tasks/:id: (Manager, Executant) Vizualizează detaliile unui task specific
-- DELETE /api/v1/tasks/:id: (Doar Manager) Șterge definitiv un task (doar dacă acesta este în starea OPEN)
-- PATCH /api/v1/tasks/:id/allocate: (Doar Manager) Alocă task-ul unui executant
-- PATCH /api/v1/tasks/:id/finalize: (Doar Executant) Executantul marchează task-ul ca fiind gata
-- PATCH /api/v1/tasks/:id/confirm-closure: (Doar Manager) Managerul confirmă că task-ul finalizat este bun
-- GET /api/v1/history/my: (Doar Executant) Afișează toate task-urile CLOSED finalizate de utilizatorul curent
-- GET /api/v1/history/subordinates/:userId: (Doar Manager) Afișează task-urile CLOSED finalizate de un anumit executant subordonat
+- GET /projects: (Manager) Afișează proiectele create de managerul curent
+- POST /projects: (Manager) Creează un proiect nou.
+- GET /projects/:id: (Manager + Executant) Afișează detaliile unui proiect și task-urile din el
+- DELETE /projects/:id: (Manager) Șterge un proiect (doar dacă este gol)
+- POST /projects/:projectId/tasks: (Manager) Creează un task nou în starea OPEN
+- GET /projects/:projectId/tasks: (Manager) Listează task-urile dintr-un proiect
+- GET /tasks/my: (Executant) Afișează task-urile alocate utilizatorului curent
+- PATCH /tasks/:id/allocate: (Manager) Alocă task-ul unui executant (OPEN -> PENDING)
+- PATCH /tasks/:id/finalize: (Executant) Marchează task-ul ca realizat (PENDING -> COMPLETED)
+- PATCH /tasks/:id/close: (Manager) Confirmă și închide task-ul (COMPLETED -> CLOSED)
+- DELETE /tasks/:id: (Manager) Șterge un task (doar dacă este OPEN)
+- GET /history/my: (Executant) Afișează arhiva personală de task-uri finalizate (CLOSED)
+- GET /history/subordinates/:userId: (Manager) Afișează istoricul task-urilor pentru un subordonat
 
 ## II.Rute Front-End 
 - /login: Pagina principală de Login (acces public)
