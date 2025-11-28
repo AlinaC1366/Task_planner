@@ -1,0 +1,24 @@
+{
+  
+  "compilerOptions": {
+    //Setari de baz
+    "module": "nodenext",//sistemul de module modern(pentru a folosii 'import/export')
+    "target": "es2022",//versiunea de js in care se compileaza codul(Node.js modern)
+    "moduleResolution": "NodeNext",                 /* Modul în care TypeScript rezolvă căile și importurile. */
+    "outDir": "./dist",                             /* Directorul unde va merge codul compilat (JavaScript). */
+    "rootDir": "./src",                             /* Directorul sursă (aici este tot codul tău .ts). */
+    "esModuleInterop": true,                        /* Îmbunătățește compatibilitatea cu importurile JS vechi. */
+    "forceConsistentCasingInFileNames": true,       /* Asigură coerența în numele fișierelor. */
+    "strict": true,                                 /* Activează toate regulile stricte de tipare (Recomandat!). */
+    "skipLibCheck": true,                           /* Ignoră verificarea tipurilor în fișierele din node_modules. */
+    "sourceMap": true,                              /* Generează fișiere map pentru debugging. */
+    "allowJs": true,                                /* Permite includerea fișierelor JavaScript. */
+    
+    /* Setări adiționale pentru Prisma */
+    "resolveJsonModule": true,                      /* Permite importul de fișiere JSON. */
+    "emitDecoratorMetadata": true,                  /* Ajută la lucrul cu anumite librării (dar nu esențial acum). */
+    "experimentalDecorators": true                  /* Permite funcțiile experimentale (dar nu esențial acum). */
+  },
+  "include": ["src/**/*.ts"],                       /* Spune compilatorului să includă toate fișierele .ts din folderul src. */
+  "exclude": ["node_modules"]                       /* Ignoră folderul node_modules. */
+}

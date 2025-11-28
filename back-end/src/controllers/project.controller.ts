@@ -1,0 +1,116 @@
+import { Request,Response,NextFunction } from 'express';
+import prisma from '../services/prisma.service';
+
+
+// --- 1. CREATE PROJECT ---
+// Ruta: POST /api/v1/projects
+// Acces: DOAR MANAGER
+// SCOP: Permite unui manager sa creeze un proiect nou
+// VALIDARI: Numele este obligatoriu. Proiectul se leaga automat de managerul logat
+export const createProject = async (req: Request, res: Response, next: NextFunction) => {
+    const { name, description } = req.body;
+
+    // Extragem ID-ul managerului din token (req.user)
+    const managerId = (req as any).user.userId;
+
+    if(!name){
+        return next({ status: 400, message: 'Numele proiectului este obligatoriu.' });
+    }
+    try{
+        const project = await prisma.project.create({
+            data: {
+                name,
+                description,
+                managerId: managerId // Legătura automata (Foreign Key)
+            }
+        });
+        return res.status(201).json(project);
+    }catch(error){
+        console.error("❌ Eroare creare proiect:",error);
+        next(error);
+    }
+};
+
+// --- 2. GET MY PROJECTS ---
+// Ruta: GET /api/v1/projects
+// Acces: DOAR MANAGER
+// SCOP: Returneaza lista de proiecte detinuta de managerul curent
+// DETALII: Include si un numarator de task-uri pentru fiecare proiect
+export const getMyProjects = async (req: Request, res: Response, next: NextFunction) => {
+    const managerId=(req as any).user.userId;
+
+    try{
+        const projects = await prisma.project.findMany({
+            where:{
+                managerId: managerId // Filtru de securitate (Doar ale mele)
+            },
+            include: {
+                _count: { select : { tasks: true }} // Optimizare: numara task-urile direct din DB
+            }
+        });
+        
+        return res.status(200).json(projects);
+    } catch(error){
+        console.error("❌ Eroare afișare proiecte:",error);
+        next(error);
+    }
+};
+
+// --- 3. GET PROJECT DETAILS ---
+// Ruta: GET /api/v1/projects/:id
+// Acces: MANAGER + EXECUTANT
+// SCOP: Afiseaza detaliile unui proiect specific si lista sa de task-uri
+export const getProjectById = async (req: Request, res: Response, next: NextFunction) =>{
+    const { id } = req.params;
+    try{
+        const project = await prisma.project.findUnique({
+            where: { id },
+            include: {
+                tasks: true  // JOIN: Aducem si task-urile
+            }
+        });
+        if(!project){
+            return next({ status: 404, message: 'Proiectul nu exista.' });
+        }
+
+        return res.status(200).json(project);
+    }catch (error){
+        
+        console.error(`❌ Eroare afișare cu id-ul ${id}`,error);
+        next(error);
+    }
+};
+
+// --- 4. DELETE PROJECT ---
+// Ruta: DELETE /api/v1/projects/:id
+// Acces: DOAR MANAGER
+// LOGICA: Un proiect poate fi sters DOAR daca nu are task-uri active in el.
+export const deleteProject = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    try{
+        // Pas 1: Verificam existenta si continutul
+        const project = await prisma.project.findUnique({
+            where: { id },
+            include: {
+                tasks: true
+            }
+        });
+        if(!project){
+            return next({ status: 404, message: 'Proiectul nu a fost gasit.' });
+        }
+
+        // Pas 2: Validare de Integritate
+        if(project.tasks.length >0){
+            return next({ status: 400, message: 'Nu poti sterge un proiect care are task-uri active! Sterge task-urile intai. '});
+        }
+
+        // Pas 3: Stergerea efectiva
+        await prisma.project.delete({ where: { id }});
+
+        return res.status(204).send();
+    }catch (error){
+        
+        console.error('❌ Eroare ștergere proiect:',error);
+        next(error);
+    }
+};
