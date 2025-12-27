@@ -1,53 +1,23 @@
-import { useState } from 'react';
-import { login } from './services/authService';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/Login';
+import AdminDashboard from './pages/AdminDashboard';
+import ManagerDashboard from './pages/ManagerDashboard';
+import ExecutantDashboard from './pages/ExecutantDashboard';
+//import History from ''./pages/History';
 
 function App() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      // Apelăm funcția din authService
-      const data = await login(email, password);
-      setMessage(`Succes! Te-ai logat ca: ${data.user.name} (${data.user.role})`);
-      console.log('Token primit:', data.token);
-    } catch (err: any) {
-      setMessage(`Eroare: ${err.message || err}`);
-    }
-  };
-
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-      <h1>Test Conexiune Backend</h1>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>Email: </label>
-          <input 
-            type="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            placeholder="admin@test.com"
-          />
-        </div>
-        <br />
-        <div>
-          <label>Parolă: </label>
-          <input 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            placeholder="123"
-          />
-        </div>
-        <br />
-        <button type="submit">Logare</button>
-      </form>
-
-      {message && <p><strong>{message}</strong></p>}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/manager" element={<ManagerDashboard />} />
+        <Route path="/executant" element={<ExecutantDashboard />} />
+        <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
+    </Router>
   );
 }
-
+//        <Route path="/" element={<History />} />
+ 
 export default App;

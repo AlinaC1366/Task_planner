@@ -1,0 +1,147 @@
+@import './variables.css';
+
+.login-page {
+  background-color: var(--bg-color);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.login-card {
+  background-color: #FFFFFF;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(26, 26, 29, 0.1);
+  width: 90%;
+  max-width: 400px;
+  height: auto;
+}
+
+.login-header h2 {
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.login-header p {
+  color: var(--border-color);
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+}
+
+.error-message {
+  background-color: #FFEBEE;
+  color: #D32F2F;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+  border-left: 4px solid #D32F2F;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.login-input {
+  width: 100%;
+  padding: 0.85rem;
+  border-radius: 6px;
+  border: 1.5px solid var(--border-color);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.login-input:focus {
+  border-color: var(--brand-main);
+}
+
+.login-button {
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--brand-main);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.login-button:hover:not(:disabled) {
+  background-color: var(--brand-secondary);
+  transform: translateY(-1px);
+}
+
+.login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 1.5rem;
+  }
+  
+  .login-header h2 {
+    font-size: 1.5rem;
+  }
+}
+
+.label-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: var(--brand-main);
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  transition: color 0.2s ease;
+}
+
+.link-button:hover {
+  color: var(--brand-secondary);
+  text-decoration: underline;
+}
+
+.link-button.small {
+  font-size: 0.75rem;
+}
+
+.link-button.bold {
+  font-weight: 700;
+  margin-left: 5px;
+}
+
+.login-footer {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+  text-align: center;
+}
+
+.login-footer p {
+  font-size: 0.9rem;
+  color: var(--text-main);
+  margin: 0;
+}
