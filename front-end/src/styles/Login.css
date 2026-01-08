@@ -1,5 +1,6 @@
 @import './variables.css';
 
+/* 1. Layout & Main Container */
 .login-page {
   background-color: var(--bg-color);
   min-height: 100vh;
@@ -19,6 +20,7 @@
   height: auto;
 }
 
+/* 2. Header & Typography*/
 .login-header h2 {
   color: var(--text-main);
   margin-bottom: 0.5rem;
@@ -32,6 +34,7 @@
   font-size: 0.9rem;
 }
 
+/* 3. Feedback / Errors*/
 .error-message {
   background-color: #FFEBEE;
   color: #D32F2F;
@@ -42,8 +45,16 @@
   border-left: 4px solid #D32F2F;
 }
 
+/* 4. Form Elements */
 .form-group {
   margin-bottom: 1.25rem;
+}
+
+.label-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .form-group label {
@@ -68,6 +79,8 @@
   border-color: var(--brand-main);
 }
 
+/* 5. Buttons & Links */
+/* Primary Action Button */
 .login-button {
   width: 100%;
   padding: 1rem;
@@ -92,23 +105,7 @@
   cursor: not-allowed;
 }
 
-@media (max-width: 480px) {
-  .login-card {
-    padding: 1.5rem;
-  }
-  
-  .login-header h2 {
-    font-size: 1.5rem;
-  }
-}
-
-.label-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
+/* Text/Link Buttons */
 .link-button {
   background: none;
   border: none;
@@ -133,6 +130,7 @@
   margin-left: 5px;
 }
 
+/* 6. Footer */
 .login-footer {
   margin-top: 2rem;
   padding-top: 1.5rem;
@@ -144,4 +142,15 @@
   font-size: 0.9rem;
   color: var(--text-main);
   margin: 0;
+}
+
+/* 7. Responsive Design*/
+@media (max-width: 480px) {
+  .login-card {
+    padding: 1.5rem;
+  }
+  
+  .login-header h2 {
+    font-size: 1.5rem;
+  }
 }

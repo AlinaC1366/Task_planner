@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import '../styles/AdminDashboard.css';
+import '../styles/ExcutantDashboard.css';
 
 interface Project { id: string; name: string; }
 interface Task {
@@ -36,15 +36,19 @@ const ExecutantDashboard = () => {
     navigate('/login');
   };
 
-  const handleFinalize = async (taskId: string) => {
+ const handleFinalize = async (taskId: string) => {
     try {
-      // Asigură-te că endpoint-ul este corect (PUT sau PATCH)
-      await api.put(`/tasks/${taskId}/complete`);
-      fetchMyTasks(); // Refresh listă
-    } catch (error: any) {
-      alert(error.response?.data?.message || "Eroare la finalizare");
-    }
-  };
+      // 1. Apelăm ruta exactă specificată în controllerul tău (Secțiunea 5)
+      await api.patch(`/tasks/${taskId}/finalize`);
+      
+      // 2. Reîmprospătăm lista
+      fetchMyTasks(); 
+      } catch (error: any) {
+        console.error("Eroare la finalizare:", error);
+        const msg = error.response?.data?.message || "Eroare necunoscută";
+        alert(`Nu s-a putut finaliza: ${msg}`);
+      }
+ };
 
   const groupedTasks = tasks.reduce((acc, task) => {
     const projectName = task.project?.name || 'Sarcini fără proiect';
@@ -54,7 +58,7 @@ const ExecutantDashboard = () => {
   }, {} as Record<string, Task[]>);
 
   return (
-    <div className="admin-dashboard">
+    <div className="executant-dashboard">
       <header className="dashboard-header">
         <h1 className="dashboard-title">Dashboard-ul Meu</h1>
         <button className="btn-logout" onClick={handleLogout}>Log Out</button>
