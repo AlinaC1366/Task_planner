@@ -1,366 +1,356 @@
 @import './variables.css';
 
-/* 1. FIX GLOBAL & AUTOFILL */
+/* 1. Global Resets & Fixes */
 *, *::before, *::after {
   box-sizing: border-box !important;
 }
 
-input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
-  transition: background-color 5000s ease-in-out 0s;
+/* 2. Main Layout*/
+.dashboard-wrapper {
+  background-color: var(--bg-color, #fdf6f6);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* --- CONTAINER PRINCIPAL --- */
-.dashboard-container {
+.main-content {
   padding: 2rem;
-  background-color: var(--bg-color);
-  min-height: 100vh;
   max-width: 1300px;
   margin: 0 auto;
-  font-family: inherit;
 }
 
-/* --- HEADER (STIL ADMIN) --- */
-.dashboard-header {
+/* 3. Header Section (Navbar) */
+.navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid var(--highlight-accent);
+  background: #3b1e32;
+  padding: 1rem 2rem;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.dashboard-header h1 {
-  color: var(--text-main);
+.navbar h2 {
   margin: 0;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 700;
 }
 
-.dashboard-header p {
-  color: var(--brand-main);
-  font-weight: 700;
-  margin: 0;
+.btn-logout {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
 }
 
-/* --- ERORI --- */
-.error-message {
-  background-color: #ffdada;
+.btn-logout:hover {
+  background-color: #5a6268;
+}
+
+/* 4. Feedback & Divider */
+.error-text {
   color: #d32f2f;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-  border-left: 5px solid #d32f2f;
+  background-color: #ffebee;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+  border-left: 4px solid #d32f2f;
 }
 
-/* --- SECTIUNI (CA SECTION-CARD) --- */
-.new-project-section, 
-.projects-list-section {
+.divider {
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 2rem 0;
+}
+
+.section-title {
+  color: #3b1e32;
+  border-bottom: 2px solid #dcd6f7;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+/* 5. Create Project Form (Main Input) */
+.create-project-container {
   background: white;
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
   margin-bottom: 2rem;
 }
 
-.new-project-section h2,
-.projects-list-section h2 {
-  color: var(--brand-main);
-  border-bottom: 2px solid var(--highlight-accent);
-  padding-bottom: 0.5rem;
-  margin-bottom: 1.5rem;
-  font-size: 1.2rem;
+.create-project-container h3 {
+  margin-top: 0;
+  color: var(--brand-main, #3b1e32);
 }
 
-/* --- FORMULARUL (STIL FORM-GRID) --- */
 .project-form {
   display: flex;
-  flex-direction: row; 
-  align-items: flex-start;
   gap: 12px;
   flex-wrap: wrap; 
 }
 
-.project-form input, 
-.project-form textarea {
+.project-form input {
   flex: 1;
   min-width: 200px;
   height: 45px; 
-  margin: 0;
   padding: 0 15px;
-  border: 1.5px solid var(--border-color);
+  border: 1.5px solid #ccc;
   border-radius: 8px;
-  outline: none;
-  font-size: 0.95rem;
-  font-family: inherit;
+  font-size: 1rem;
 }
 
-.project-form textarea {
-  padding-top: 10px;
-  height: 45px; /* Mentinem alinierea la 45px ca in Admin */
-  resize: none;
-}
-
-.project-form input:focus,
-.project-form textarea:focus {
-  border-color: var(--brand-main);
-}
-
-.project-form button {
-  background-color: var(--brand-main) !important;
-  color: white !important;
+.btn-create {
+  background-color: #3b1e32;
+  color: white;
   border: none;
   height: 45px; 
   padding: 0 25px;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  white-space: nowrap;
   transition: transform 0.1s;
 }
 
-.project-form button:active {
+.btn-create:active {
   transform: scale(0.98);
 }
 
-/* --- GRID PROIECTE & CARDURI --- */
+/*  6. Projects Grid */
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
 }
 
+/* 7. Project Card Styling */
 .project-card {
-  border: 1.5px solid var(--highlight-accent);
-  border-radius: 12px;
-  padding: 1.2rem;
   background: white;
-  transition: all 0.3s ease;
+  border: 1px solid #dcd6f7; 
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .project-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  border-color: var(--brand-main);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+  border-color: #c0b0e0;
 }
 
-.project-card h3 {
-  margin: 0;
-  color: var(--brand-secondary);
-  font-size: 1.1rem;
-}
-
-.project-card p {
-  color: #666;
-  font-size: 0.9rem;
-  margin: 0;
-  min-height: 40px;
-}
-
-.project-stats {
-  font-size: 0.85rem;
-  padding: 8px 0;
-  border-top: 1px solid #eee;
-}
-
-.project-stats strong {
-  color: var(--brand-main);
-}
-
-/* --- BUTON STERGERE (STIL BTN-DELETE) --- */
-.delete-btn {
-  background-color: #d32f2f !important; 
-  color: white !important; 
-  border: none; 
-  padding: 10px 14px; 
-  border-radius: 8px; 
-  cursor: pointer; 
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: opacity 0.2s;
-}
-
-.delete-btn:hover {
-  opacity: 0.9;
-}
-
-/* --- RESPONSIVE --- */
-@media (max-width: 850px) {
-  .project-form {
-    flex-direction: column;
-  }
-  
-  .project-form input, 
-  .project-form textarea,
-  .project-form button {
-    width: 100%;
-  }
-
-  .projects-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Stil pentru Header-ul cardului de proiect */
-.project-card-header {
+/* Header Card */
+.card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
 }
 
-.task-count-badge {
-  background: var(--highlight-accent);
-  color: var(--brand-secondary);
-  padding: 2px 8px;
+.project-title {
+  font-size: 1.25rem;
+  color: #3b1e32;
+  margin: 0;
+  font-weight: 700;
+}
+
+.task-badge {
+  background-color: #e0b0d0;
+  color: #3b1e32;
+  padding: 4px 10px;
   border-radius: 12px;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: bold;
 }
 
-/* Caseta de adăugare task rapid */
-.add-task-box {
+.project-desc {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+.card-divider {
+  border: 0;
+  border-top: 1px solid #eee;
+  margin: 15px 0;
+}
+
+/* 8. INTERNAL TASK LIST*/
+.tasks-list {
+  max-height: 200px; /* Scroll daca sunt multe task-uri */
+  overflow-y: auto;
+  margin-bottom: 15px;
+  padding-right: 5px; /* Spatiu pentru scrollbar */
+}
+
+/* Scrollbar subtire pentru lista */
+.tasks-list::-webkit-scrollbar {
+  width: 6px;
+}
+.tasks-list::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 3px;
+}
+
+/* Un singur rand de task */
+.task-item {
+  background-color: #f9f9f9;
+  border-left: 4px solid #ccc;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Culori bordura status */
+.task-item.status-open { border-left-color: #28a745; }
+.task-item.status-pending { border-left-color: #ffc107; }
+.task-item.status-completed { border-left-color: #17a2b8; }
+.task-item.status-closed { border-left-color: #6c757d; opacity: 0.6; }
+
+.task-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status-pill {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #e9ecef;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+/* Zona de actiuni (Alocare / Inchidere) */
+.task-actions {
+  margin-top: 5px;
+}
+
+.allocate-box {
   display: flex;
   gap: 5px;
-  margin: 15px 0;
-  padding-top: 15px;
-  border-top: 1px dashed var(--highlight-accent);
+  align-items: center;
 }
 
-.add-task-box input {
+.select-executant {
   flex: 1;
-  height: 35px !important; /* Mai mic decât input-ul de proiect */
-  font-size: 0.85rem !important;
-  border: 1px solid var(--border-color) !important;
+  font-size: 0.8rem;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-.add-task-box button {
-  width: 35px;
-  height: 35px;
-  background: var(--brand-main);
-  color: white;
-  border: none;
-  border-radius: 6px;
+.assigned-info {
+  display: block;
+  font-size: 0.8rem;
+  color: #555;
+  background: #fff3cd;
+  padding: 4px;
+  border-radius: 3px;
+}
+
+.no-tasks {
+  font-size: 0.85rem;
+  color: #999;
+  text-align: center;
+  font-style: italic;
+  padding: 10px;
+}
+
+/* 9. Buttons & Inputs inside Card */
+/* Butoane mici (Aloca, Sterge task) */
+.btn-small {
+  padding: 4px 8px;
+  font-size: 0.9rem;
   cursor: pointer;
-  font-weight: bold;
-  font-size: 1.2rem;
+  border: none;
+  border-radius: 4px;
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.add-task-box button:hover {
-  background: var(--brand-secondary);
+.btn-allocate { background-color: #3b1e32; }
+.btn-delete-task { background-color: #dc3545; }
+
+.btn-close { 
+  background-color: #28a745; 
+  width: 100%; 
+  text-align: center;
 }
 
-.project-card-footer {
-  margin-top: auto;
+/* Zona Adaugare Task Nou */
+.add-task-area {
+  margin-bottom: 15px;
 }
 
-.add-task-container {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 15px 0;
-  padding: 15px 0;
-  border-top: 1px solid var(--highlight-accent);
-}
-
-.task-input-field, .executant-select {
-  height: 40px !important;
-  border: 1.5px solid var(--border-color) !important;
-  border-radius: 6px;
-  padding: 0 10px;
-  font-family: inherit;
+.input-new-task {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 8px;
   font-size: 0.9rem;
 }
 
-.btn-add-task {
-  background-color: var(--brand-secondary) !important;
-  color: white !important;
+.btn-create-task {
+  width: 100%;
+  background-color: #3b1e32;
+  color: white;
   border: none;
-  height: 40px;
-  border-radius: 6px;
+  padding: 8px;
+  border-radius: 4px;
   font-weight: 600;
   cursor: pointer;
+  font-size: 0.9rem;
 }
 
-.btn-add-task:hover {
-  background-color: var(--brand-main) !important;
+.btn-create-task:hover {
+  background-color: #5a2d4d;
 }
 
-.delete-btn {
-    margin-top: 10px;
+/* Buton Sterge Proiect (Footer Card) */
+.btn-delete-project {
+  width: 100%;
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: auto;
 }
 
-/* Stiluri pentru Status-uri */
-.status-badge {
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-size: 0.7rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    margin-left: 10px;
+.btn-delete-project:hover {
+  background-color: #b71c1c;
 }
 
-.status-open { background-color: #28a745; color: white; }      /* Verde */
-.status-pending { background-color: #ffc107; color: black; }   /* Galben */
-.status-completed { background-color: #28a745; color: white; } /* Verde */
-.status-closed { background-color: #dc3545; color: white; }    /* Roșu */
-
-.tasks-list-container {
-    margin: 15px 0;
-    text-align: left;
-    border-top: 1px solid #eee;
-    padding-top: 10px;
-}
-
-.task-card-item {
-    display: flex;
+/* 10. Responsiveness*/
+@media (max-width: 768px) {
+  .project-form {
     flex-direction: column;
-    padding: 8px;
-    border-bottom: 1px solid #f9f9f9;
-}
+  }
+  
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
 
-.task-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.allocation-controls {
-    display: flex;
-    gap: 5px;
-    margin-top: 5px;
-}
-
-.allocation-controls select {
-    font-size: 0.8rem;
-    padding: 2px;
-}
-
-.allocation-controls button {
-    padding: 2px 8px;
-    font-size: 0.8rem;
-}
-
-.logout-btn {
-    border: none;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
-
-.logout-btn:hover {
-    background-color: #5a6268 !important; /* Un gri mai închis la hover */
-}
-
-.dashboard-header {
-    background: #fff;
-    padding: 20px;
-    border-bottom: 2px solid --brand-main ; /* Sau culoarea ta dominantă */
-    margin-bottom: 30px;
+  .navbar {
+    padding: 1rem;
+  }
 }
