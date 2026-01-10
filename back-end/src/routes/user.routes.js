@@ -5,8 +5,8 @@ import { createUser,
        getAllUsers,
        updateUser,
        deleteUser
- } from '../controllers/user.controller'; 
-import { authorize } from '../middleware/auth.middleware';
+ } from '../controllers/user.controller.js'; 
+import { authorize } from '../middleware/auth.middleware.js';
 const router = Router();
 
 // RUTE PENTRU ADMINISTRAREA UTILIZATORILOR (USER MANAGEMENT)

@@ -1,11 +1,7 @@
 
-import { Request, Response,NextFunction  } from 'express';
 import bcrypt from 'bcrypt';
-import prisma from '../services/prisma.service'; 
+import prisma from '../services/prisma.service.js'; 
 
-// Tipul de date pentru a valida ce primim în req.body
-// Folosim ENUM-ul UserRole definit in schema Prisma
-type UserRole = 'ADMIN' | 'MANAGER' | 'EXECUTANT';
 
 // Numărul de runde de hash-uire, cu cât e mai mare, cu atât e mai sigur
 const saltRounds = 10;
@@ -28,7 +24,7 @@ const saltRounds = 10;
 //    - email trebuie sa fie unic → daca nu, Prisma arunca P2002
 
 
-export const createUser = async (req: Request, res: Response, next: NextFunction) => {
+export const createUser = async (req, res, next) => {
 
     const { name, email, password, role, managerId } = req.body;
 
@@ -43,7 +39,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
                 name,
                 email,
                 passwordHash, 
-                role: role as UserRole,
+                role: role,
                 managerId: role === 'EXECUTANT' ? managerId : null, 
             },
             
@@ -58,7 +54,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 
         return res.status(201).json(newUser);
 
-    } catch (error : any) {
+    } catch (error) {
 
         console.error("❌ Eroare în createUser:", error);
         if (error.code === 'P2002') {
@@ -82,7 +78,7 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
 //    - findMany returneaza toti utilizatorii
 //    - select foloseste doar campurile necesare (fara passwordHash)
 
-export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllUsers = async (req, res, next) => {
     try{
         const users= await prisma.user.findMany({
             select: {
@@ -118,7 +114,7 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
 //    - utilizatorul nu isi poate seta managerId ca fiind propriul ID (logica business)
 //    - managerId se aplica doar la EXECUTANT
 
-export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+export const updateUser = async (req, res, next) => {
     const { id } = req.params;
     const { name, role, managerId } = req.body;
 
@@ -131,7 +127,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
             where: { id : id },
             data: {
                 name,
-                role: role as UserRole,
+                role: role,
                 managerId: role === 'EXECUTANT' ? managerId : null
             },
             select: {
@@ -164,9 +160,9 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
 //    - Daca userul are taskuri asociate → FK constraint va declansa eroare
 //    - Nu permitem unui admin sa se steargă pe el însusi (logica safety)
 
-export const deleteUser = async (req: Request, res: Response, next : NextFunction) => {
+export const deleteUser = async (req, res, next) => {
     const { id } = req.params;
-    const currentAdminId = (req as any).user.userId;
+    const currentAdminId = req.user.userId;
 
     if(id === currentAdminId){
         return next({ status: 400, message: "Nu te poți șterge singur." });
@@ -180,6 +176,14 @@ export const deleteUser = async (req: Request, res: Response, next : NextFunctio
         return res.status(204).send();
 
     }catch(error){
+
+        
+        if (error.code === 'P2003') {
+            return next({ 
+                status: 400, 
+                message: "Nu poți șterge acest utilizator deoarece are proiecte sau task-uri asociate. Șterge-le pe acestea mai întâi." 
+            });
+        }
 
         console.error(`❌ Eroare în deleteUser pentru ID ${id}:`, error);
         next(error);

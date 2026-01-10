@@ -1,16 +1,16 @@
 
 import 'dotenv/config'; 
-import express, { Application } from 'express';
+import express from 'express';
 import cors from 'cors';
-import userRoutes from './routes/user.routes'; 
-import authRoutes from './routes/auth.routes';
-import projectRoutes from './routes/project.routes';
-import taskRoutes from './routes/task.routes';
-import historyRoutes from './routes/history.routes';
-import { errorHandler } from './middleware/errorHandler.middleware';
+import userRoutes from './routes/user.routes.js'; 
+import authRoutes from './routes/auth.routes.js';
+import projectRoutes from './routes/project.routes.js';
+import taskRoutes from './routes/task.routes.js';
+import historyRoutes from './routes/history.routes.js';
+import { errorHandler } from './middleware/errorHandler.middleware.js';
 
 // --- CONFIGURARE INIȚIALA ---
-const app: Application = express();
+const app = express();
 const PORT = process.env.PORT || 3000; 
 
 

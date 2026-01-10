@@ -1,142 +1,130 @@
 @import './variables.css';
 
-/* 1. Main Layout */
-.executant-dashboard {
-  padding: 2rem;
-  min-height: 100vh;
-  background-color: var(--bg-color);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+.admin-dashboard {
+    padding: 2rem;
+    min-height: 100vh;
+    background-color: var(--bg-light);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* 2. Header & Navigation */
+/* HEADER */
 .dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  padding: 1rem 1.5rem;
-  background: var(--bg-color);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
 }
 
 .dashboard-title {
-  font-size: 1.5rem;
-  color: var(--brand-main);
-  margin: 0;
+    font-size: 1.5rem;
+    color: var(--brand-main);
+    margin: 0;
+}
+
+.btn-logout {
+    background-color: var(--accent-red) !important;
+    color: white !important;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.2s;
 }
 
 .btn-logout:hover {
-  opacity: 0.8;
+    opacity: 0.8;
 }
 
-/* 3. Cards & Structure */
+/* CARDS & TABLES */
 .section-card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
 }
 
 .project-group {
-  margin-top: 20px;
-  border: 1px solid #eee;
-  border-radius: 10px;
-  overflow: hidden;
+    margin-top: 20px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 .project-header {
-  background: #f4f0f7;
-  padding: 12px 20px;
-  margin: 0;
-  border-left: 5px solid var(--brand-main);
+    background: #f4f0f7;
+    padding: 12px 20px;
+    margin: 0;
+    border-left: 5px solid var(--brand-main);
 }
 
-/* 4. Tables */
 .user-table {
-  width: 100%;
-  border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
 }
 
 .user-table th {
-  background: #fafafa;
-  text-align: left;
-  padding: 12px;
-  border-bottom: 2px solid #eee;
+    background: #fafafa;
+    text-align: left;
+    padding: 12px;
+    border-bottom: 2px solid #eee;
 }
 
 .user-table td {
-  padding: 12px;
-  border-bottom: 1px solid #f0f0f0;
-}
-/* 5. Status Badges */
-.executant-dashboard .status-badge {
-  padding: 5px 12px;
-  border-radius: 15px;
-  font-size: 0.75rem;
-  font-weight: bold;
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
 }
 
-.executant-dashboard .status-pending {
-  background: #fff3e0;
-  color: #c09333;
+/* BADGES */
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: bold;
 }
 
-.executant-dashboard .status-closed {
-  background: #e8f5e9;
-  color: #2e7d32;
-}
+.status-pending { background: #fff3e0; color: #ef6c00; }
+.status-closed { background: #e8f5e9; color: #2e7d32; }
 
-/* 6. Action Buttons */
-.executant-dashboard .btn-finalize {
-  background-color: var(--brand-main) !important;
-  color: white !important;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.executant-dashboard .btn-finalize:hover {
-  background-color: var(--brand-secondary) !important;
-}
-/* 6. Action Buttons */
-/* Buton Finalizeaza */
+/* BUTON FINALIZEAZA */
 .btn-finalize {
-  background-color: var(--brand-main) !important;
-  color: white !important;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
+    background-color: var(--brand-main) !important;
+    color: white !important;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
 }
 
 .btn-finalize:hover {
-  background-color: var(--brand-secondary) !important;
+    background-color: var(--brand-secondary) !important;
 }
 
-/* Buton Istoric (Floating) */
+/* BUTON ISTORIC (FLOATING RIGHT) */
 .btn-history-floating {
-  position: fixed;
-  bottom: 30px;
-  right: 30px; 
-  background-color: var(--brand-main) !important;
-  color: white !important;
-  border: none !important;
-  padding: 15px 25px;
-  border-radius: 30px;
-  font-weight: bold;
-  box-shadow: 0 4px 15px rgba(106, 27, 154, 0.4);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  z-index: 1000;
+    position: fixed;
+    bottom: 30px;
+    right: 30px; /* Acum este forțat în dreapta */
+    background-color: var(--brand-main) !important;
+    color: white !important;
+    border: none !important;
+    padding: 15px 25px;
+    border-radius: 30px;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(106, 27, 154, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 1000;
 }
 
 .btn-history-floating:hover {
-  transform: scale(1.05);
-  background-color: var(--brand-secondary) !important;
+    transform: scale(1.05);
+    background-color: var(--brand-secondary) !important;
 }
