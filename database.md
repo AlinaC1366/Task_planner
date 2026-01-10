@@ -33,24 +33,23 @@
 - managerId: (UUID) Cheie Externă (FK) la Users(id), indicând Managerul responsabil cu Proiectul
 - createdAt: (TIMESTAMP) Momentul creării
 
-## Interpretarea Relațiilor Cheie
 
-### Relația Ierarhică (Users —> Users):
-Relația Ierarhică (Users —> Users): 
-- Tip: 1:N Auto-referențială (pe câmpul managerId)
-- Funcție: Definește cine pe cine supraveghează
+##  Interpretarea Relațiilor Cheie
 
-### Relațiile de Task (Tasks —>Users):
-- Două relații N:1 (pe creatorId și assignedToId)
-- Funcție: Definește proprietarul (creatorul, care este întotdeauna un Manager) și responsabilul cu execuția (Executantul alocat)
+### 1. Relația Ierarhică (Users ⟳ Users)
+* **Tip:** `1:N` (One-to-Many) Auto-referențială.
+* **Descriere:** Un Manager poate avea mai mulți subordonați (Executanți), dar un Executant are un singur Manager direct.
 
-### Relația de Istoric (TaskHistory —> Tasks / Users):
-- Tip: Două relații N:1
-- Funcție: Leagă fiecare schimbare de stare la Task-ul afectat și la Utilizatorul care a inițiat acea schimbare, asigurând urmărirea tuturor schimbărilor
+### 2. Relația de Apartenență (Projects ➡ Tasks)
+* **Tip:** `1:N` (One-to-Many).
+* **Descriere:** Un Proiect conține mai multe Task-uri. Un Task aparține obligatoriu unui singur Proiect.
 
-### Relația de Gruparea (Projects —> Tasks)
-- Tip : O relație 1:N
-- Funcție : Care permite unui singur Proiect să conțină multiple Task-uri
+### 3. Relațiile de Responsabilitate (Users ➡ Tasks)
+Avem două relații distincte între utilizatori și task-uri:
+* **Creator:** (Managerul) care definește task-ul.
+* **Assignee:** (Executantul) care trebuie să îl rezolve.
 
-
+### 4. Relația de Audit (Tasks ➡ TaskHistory)
+* **Tip:** `1:N`.
+* **Descriere:** Un Task poate avea o istorie lungă de modificări (mai multe intrări în History), permițând reconstituirea completă a fluxului de lucru.
 
