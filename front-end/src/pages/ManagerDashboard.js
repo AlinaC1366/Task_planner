@@ -1,35 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import api from '../services/api';
-import '../styles/ManagerDashboard.css'; // Asigură-te că ai fișierul CSS de la pasul 2
 import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
+import '../styles/ManagerDashboard.css';
 
-interface Task {
-  id: string;
-  title: string;
-  status: 'OPEN' | 'PENDING' | 'COMPLETED' | 'CLOSED';
-  assignedTo?: {
-    name: string;
-    email: string;
-  };
-}
-
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-  tasks?: Task[]; 
-  _count?: { tasks: number; };
-}
-
-interface User {
-  id: string;
-  name: string;
-  role: string;
-}
-
-const ManagerDashboard: React.FC = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [executants, setExecutants] = useState<User[]>([]);
+const ManagerDashboard = () => {
+  const [projects, setProjects] = useState([]);
+  const [executants, setExecutants] = useState([]);
+  
   // State pentru form-ul global de proiecte
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -38,9 +15,9 @@ const ManagerDashboard: React.FC = () => {
   const navigate = useNavigate();
   
   // State pentru titlul task-ului nou (specific per proiect)
-  const [newTaskTitle, setNewTaskTitle] = useState<{ [key: string]: string }>({});
+  const [newTaskTitle, setNewTaskTitle] = useState({});
   // State pentru executantul selectat (specific per task)
-  const [selectedUser, setSelectedUser] = useState<{ [key: string]: string }>({});
+  const [selectedUser, setSelectedUser] = useState({});
 
   useEffect(() => {
     fetchProjects();
@@ -49,31 +26,25 @@ const ManagerDashboard: React.FC = () => {
 
   const fetchProjects = async () => {
     try {
-      // 1. Cerem lista de proiecte (care vine DOAR cu numărătoarea, fără task-uri efective)
+      // 1. Luăm proiectele
       const projectsResponse = await api.get('/projects');
-      const projectsData = projectsResponse.data;
+      const projectsData = projectsResponse.data || [];
 
-      // 2. Pentru fiecare proiect, facem o cerere separată să-i aducem task-urile
-      // Folosim Promise.all ca să le încărcăm pe toate în paralel (mai rapid)
+      // 2. Luăm task-urile pentru fiecare proiect
       const projectsWithTasks = await Promise.all(
-        projectsData.map(async (project: Project) => {
+        projectsData.map(async (project) => {
           try {
-            // Accesăm ruta din task.controller pe care o ai deja: GET /projects/:id/tasks
             const tasksResponse = await api.get(`/projects/${project.id}/tasks`);
-            
-            // Returnăm proiectul vechi combinat cu lista nouă de task-uri
-            return { ...project, tasks: tasksResponse.data };
+            return { ...project, tasks: tasksResponse.data || [] };
           } catch (error) {
-            console.error(`Nu s-au putut încărca task-urile pentru proiectul ${project.id}`);
-            // Dacă apare o eroare la un proiect, îl returnăm cu lista de task-uri goală
+            console.error(`Eroare task-uri proiect ${project.id}`);
             return { ...project, tasks: [] };
           }
         })
       );
 
-      // 3. Salvăm în state proiectele COMPLETE (cu tot cu task-uri)
       setProjects(projectsWithTasks);
-    } catch (err: any) {
+    } catch (err) {
       setError('Eroare la încărcarea proiectelor.');
     }
   };
@@ -81,31 +52,29 @@ const ManagerDashboard: React.FC = () => {
   const fetchExecutants = async () => {
     try {
       const response = await api.get('/users');
-      // Filtrăm doar executanții pentru dropdown [cite: 3428]
-      setExecutants(response.data.filter((u: User) => u.role === 'EXECUTANT'));
-    } catch (err: any) {
+      const users = response.data || [];
+      setExecutants(users.filter((u) => u.role === 'EXECUTANT'));
+    } catch (err) {
       console.error("Nu s-au putut încărca executanții");
     }
   };
 
   // --- ACTIUNI TASK-URI ---
 
-  // 1. Creare Task (Status devine OPEN) [cite: 3008]
-  const handleCreateTask = async (projectId: string) => {
+  const handleCreateTask = async (projectId) => {
     const title = newTaskTitle[projectId];
     if (!title) return alert("Introdu un titlu pentru task!");
     
     try {
       await api.post(`/projects/${projectId}/tasks`, { title, description: "Task creat de manager" });
-      setNewTaskTitle({ ...newTaskTitle, [projectId]: "" }); // Reset input
-      fetchProjects(); // Reîmprospătăm lista
+      setNewTaskTitle({ ...newTaskTitle, [projectId]: "" }); 
+      fetchProjects(); 
     } catch (err) {
       alert("Eroare la creare task.");
     }
   };
 
-  // 2. Alocare Executant (Status devine PENDING) [cite: 3108]
-  const handleAllocate = async (taskId: string) => {
+  const handleAllocate = async (taskId) => {
     const userId = selectedUser[taskId];
     if (!userId) return alert("Te rog selectează un executant din listă!");
     
@@ -113,12 +82,11 @@ const ManagerDashboard: React.FC = () => {
       await api.patch(`/tasks/${taskId}/allocate`, { assignedToId: userId });
       fetchProjects();
     } catch (err) {
-      alert("Eroare la alocare. Verifică logurile.");
+      alert("Eroare la alocare.");
     }
   };
 
-  // 3. Închidere Task (Status devine CLOSED) [cite: 3185]
-  const handleClose = async (taskId: string) => {
+  const handleClose = async (taskId) => {
     try {
       await api.patch(`/tasks/${taskId}/close`);
       fetchProjects();
@@ -127,8 +95,7 @@ const ManagerDashboard: React.FC = () => {
     }
   };
 
-  // 4. Ștergere Task (Doar dacă e OPEN) [cite: 3225]
-  const handleDeleteTask = async (taskId: string) => {
+  const handleDeleteTask = async (taskId) => {
       if(!window.confirm("Ștergi acest task?")) return;
       try {
           await api.delete(`/tasks/${taskId}`);
@@ -136,26 +103,30 @@ const ManagerDashboard: React.FC = () => {
       } catch (err) {
           alert("Poți șterge doar task-uri OPEN!");
       }
-  }
+  };
 
   // --- ACTIUNI PROIECTE ---
 
-  const handleCreateProject = async (e: React.FormEvent) => {
+  const handleCreateProject = async (e) => {
     e.preventDefault();
     if (!name) return setError('Numele proiectului este obligatoriu.');
     try {
       await api.post('/projects', { name, description });
-      setName(''); setDescription(''); fetchProjects();
+      setName(''); setDescription(''); 
+      fetchProjects();
     } catch (err) { setError('Eroare la crearea proiectului.'); }
   };
 
-  const handleDeleteProject = async (id: string, taskCount: number) => {
-    // Backend-ul interzice ștergerea dacă există task-uri 
-    if (taskCount > 0) return alert('Nu poți șterge un proiect care are task-uri active! Șterge task-urile întâi.');
+  const handleDeleteProject = async (id, taskCount) => {
+    if (taskCount > 0) return alert('Nu poți șterge un proiect cu task-uri active!');
     
     if (window.confirm('Ești sigur că vrei să ștergi proiectul?')) {
-      await api.delete(`/projects/${id}`);
-      fetchProjects();
+      try {
+        await api.delete(`/projects/${id}`);
+        fetchProjects();
+      } catch (e) {
+        alert("Eroare la ștergere proiect.");
+      }
     }
   };
 
@@ -197,12 +168,10 @@ const ManagerDashboard: React.FC = () => {
 
         <h3 className="section-title">Proiectele Mele</h3>
         
-        {/* GRID PROIECTE - STILIZAT CA IN IMAGINE */}
         <div className="projects-grid">
           {projects.map((project) => (
             <div key={project.id} className="project-card">
               
-              {/* HEADER CARD: Titlu + Badge */}
               <div className="card-header">
                 <h4 className="project-title">{project.name}</h4>
                 <span className="task-badge">
@@ -211,22 +180,20 @@ const ManagerDashboard: React.FC = () => {
               </div>
               
               <p className="project-desc">{project.description}</p>
-
               <hr className="card-divider"/>
 
-              {/* LISTA TASK-URI EXISTENTE */}
+              {/* LISTA TASK-URI */}
               <div className="tasks-list">
                  {project.tasks && project.tasks.length > 0 ? (
                     project.tasks.map(task => (
-                        <div key={task.id} className={`task-item status-${task.status.toLowerCase()}`}>
+                        <div key={task.id} className={`task-item status-${task.status ? task.status.toLowerCase() : 'open'}`}>
                             <div className="task-info">
                                 <strong>{task.title}</strong>
                                 <span className={`status-pill ${task.status}`}>{task.status}</span>
                             </div>
                             
-                            {/* LOGICA DE ALOCARE / ACTIUNI */}
                             <div className="task-actions">
-                                {/* Daca e OPEN -> Selectam executant + Aloca */}
+                                {/* Alocare Executant */}
                                 {task.status === 'OPEN' && (
                                     <div className="allocate-box">
                                         <select 
@@ -234,7 +201,7 @@ const ManagerDashboard: React.FC = () => {
                                             onChange={(e) => setSelectedUser({...selectedUser, [task.id]: e.target.value})}
                                             defaultValue=""
                                         >
-                                            <option value="" disabled>Alege Executant</option>
+                                            <option value="" disabled>Alege...</option>
                                             {executants.map(u => (
                                                 <option key={u.id} value={u.id}>{u.name}</option>
                                             ))}
@@ -246,33 +213,31 @@ const ManagerDashboard: React.FC = () => {
                                 )}
 
                                 <button className="btn-small btn-delete-task" onClick={() => handleDeleteTask(task.id)}>
-                                            🗑️
+                                    🗑️
                                 </button>
 
-                                {/* Daca e PENDING -> Aratam cine lucreaza */}
                                 {task.status === 'PENDING' && (
                                     <small className="assigned-info">
                                         Alocat lui: <strong>{task.assignedTo?.name || 'Unknown'}</strong>
                                     </small>
                                 )}
 
-                                {/* Daca e COMPLETED -> Managerul inchide */}
                                 {task.status === 'COMPLETED' && (
                                     <button className="btn-small btn-close" onClick={() => handleClose(task.id)}>
-                                        Închide Task ✅
+                                        Închide ✅
                                     </button>
                                 )}
                             </div>
                         </div>
                     ))
                  ) : (
-                     <p className="no-tasks">Nu există task-uri.</p>
+                      <p className="no-tasks">Nu există task-uri.</p>
                  )}
               </div>
 
               <hr className="card-divider"/>
 
-              {/* ADAUGARE TASK NOU (Ca in imagine) */}
+              {/* Input Task Nou */}
               <div className="add-task-area">
                 <input 
                     type="text" 
@@ -285,11 +250,10 @@ const ManagerDashboard: React.FC = () => {
                     className="btn-create-task"
                     onClick={() => handleCreateTask(project.id)}
                 >
-                    Creează Task OPEN
+                    + Task
                 </button>
               </div>
 
-              {/* STERGE PROIECT (Ca in imagine) */}
               <button 
                 className="btn-delete-project"
                 onClick={() => handleDeleteProject(project.id, project._count?.tasks || 0)}

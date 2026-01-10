@@ -4,28 +4,10 @@ import { jwtDecode } from "jwt-decode"; // Asigură-te că ai: npm install jwt-d
 import api from '../services/api';
 import '../styles/HistoryPage.css';
 
-// Interfețe comune
-interface Project { id: string; name: string; }
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  status: string;
-  closedAt?: string;
-  project?: Project; // Pentru Executant (vine din task)
-  assignedTo?: { name: string; email: string }; // Pentru Manager
-  // Pentru Manager, task-urile vin deja în interiorul proiectului, dar normalizăm datele
-}
-
-interface UserToken {
-  role: 'MANAGER' | 'EXECUTANT' | 'ADMIN';
-  // alte câmpuri din token...
-}
-
-const HistoryPage: React.FC = () => {
-  const [groupedTasks, setGroupedTasks] = useState<Record<string, Task[]>>({});
+const HistoryPage = () => {
+  const [groupedTasks, setGroupedTasks] = useState({});
   const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState<string>('');
+  const [role, setRole] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,7 +15,7 @@ const HistoryPage: React.FC = () => {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        const decoded = jwtDecode<UserToken>(token);
+        const decoded = jwtDecode(token);
         setRole(decoded.role);
         fetchHistory(decoded.role);
       } catch (e) {
@@ -44,14 +26,14 @@ const HistoryPage: React.FC = () => {
     }
   }, [navigate]);
 
-  const fetchHistory = async (userRole: string) => {
+  const fetchHistory = async (userRole) => {
     setLoading(true);
     try {
       if (userRole === 'EXECUTANT') {
         // --- LOGICA EXECUTANT ---
         // Luăm istoricul personal (/history/my returnează o listă plată de task-uri)
         const response = await api.get('/history/my');
-        const tasks: Task[] = response.data;
+        const tasks = response.data;
 
         // Grupăm task-urile după numele proiectului
         const groups = tasks.reduce((acc, task) => {
@@ -59,7 +41,7 @@ const HistoryPage: React.FC = () => {
           if (!acc[projName]) acc[projName] = [];
           acc[projName].push(task);
           return acc;
-        }, {} as Record<string, Task[]>);
+        }, {});
         
         setGroupedTasks(groups);
 
@@ -71,9 +53,9 @@ const HistoryPage: React.FC = () => {
         const projectsRes = await api.get('/projects');
         const projectsData = projectsRes.data;
 
-        // 2. Luăm task-urile pentru fiecare proiect (N+1 fetch, similar cu dashboard-ul tău)
+        // 2. Luăm task-urile pentru fiecare proiect (N+1 fetch)
         const projectsWithTasks = await Promise.all(
-             projectsData.map(async (p: any) => {
+             projectsData.map(async (p) => {
                 try {
                     const tRes = await api.get(`/projects/${p.id}/tasks`);
                     return { ...p, tasks: tRes.data };
@@ -84,12 +66,12 @@ const HistoryPage: React.FC = () => {
         );
 
         // 3. Filtrăm și Grupăm: Păstrăm doar task-urile CLOSED
-        const groups: Record<string, Task[]> = {};
+        const groups = {};
         
-        projectsWithTasks.forEach((proj: any) => {
+        projectsWithTasks.forEach((proj) => {
             // Aici definim ce înseamnă "Istoric" pentru manager. 
             // De obicei înseamnă status CLOSED.
-            const archivedTasks = proj.tasks.filter((t: Task) => t.status === 'CLOSED');
+            const archivedTasks = proj.tasks.filter((t) => t.status === 'CLOSED');
             
             if (archivedTasks.length > 0) {
                 groups[proj.name] = archivedTasks;

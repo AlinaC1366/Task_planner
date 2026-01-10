@@ -3,19 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import '../styles/AdminDashboard.css';
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: 'ADMIN' | 'MANAGER' | 'EXECUTANT';
-  managerId?: string | null;
-}
-
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [editingUserId, setEditingUserId] = useState<string | null>(null);
+  const [editingUserId, setEditingUserId] = useState(null);
   
   const [formData, setFormData] = useState({
     name: '', email: '', password: '', role: 'EXECUTANT', managerId: ''
@@ -38,7 +30,7 @@ const AdminDashboard = () => {
     navigate('/login'); // Trimitem la login
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -60,12 +52,12 @@ const AdminDashboard = () => {
       }
       resetForm();
       fetchUsers();
-    } catch (error: any) {
+    } catch (error) {
       alert(error.response?.data?.message || "Eroare la procesare");
     }
   };
 
-  const handleEditClick = (user: User) => {
+  const handleEditClick = (user) => {
     setEditingUserId(user.id);
     setFormData({
       name: user.name,
@@ -82,7 +74,7 @@ const AdminDashboard = () => {
     setFormData({ name: '', email: '', password: '', role: 'EXECUTANT', managerId: '' });
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Sigur vrei să ștergi acest utilizator?")) {
       try {
         await api.delete(`/users/${id}`); // Ștergere utilizator
@@ -110,18 +102,46 @@ const AdminDashboard = () => {
           {editingUserId ? `Editează: ${formData.name}` : "Adaugă Utilizator Nou"}
         </h3>
         <form onSubmit={handleSubmit} className="form-grid">
-          <input className="login-input" placeholder="Nume" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
-          <input className="login-input" type="email" placeholder="Email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
-          <input className="login-input" type="password" placeholder={editingUserId ? "Parolă nouă (opțional)" : "Parolă"} value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} required={!editingUserId} />
+          <input 
+            className="login-input" 
+            placeholder="Nume" 
+            value={formData.name} 
+            onChange={e => setFormData({...formData, name: e.target.value})} 
+            required 
+          />
+          <input 
+            className="login-input" 
+            type="email" 
+            placeholder="Email" 
+            value={formData.email} 
+            onChange={e => setFormData({...formData, email: e.target.value})} 
+            required 
+          />
+          <input 
+            className="login-input" 
+            type="password" 
+            placeholder={editingUserId ? "Parolă nouă (opțional)" : "Parolă"} 
+            value={formData.password} 
+            onChange={e => setFormData({...formData, password: e.target.value})} 
+            required={!editingUserId} 
+          />
           
-          <select className="login-input" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value as any})}>
+          <select 
+            className="login-input" 
+            value={formData.role} 
+            onChange={e => setFormData({...formData, role: e.target.value})}
+          >
             <option value="MANAGER">MANAGER</option>
             <option value="EXECUTANT">EXECUTANT</option>
             <option value="ADMIN">ADMIN</option>
           </select>
 
           {formData.role === 'EXECUTANT' && (
-            <select className="login-input" value={formData.managerId} onChange={e => setFormData({...formData, managerId: e.target.value})}>
+            <select 
+              className="login-input" 
+              value={formData.managerId} 
+              onChange={e => setFormData({...formData, managerId: e.target.value})}
+            >
               <option value="">Alege Managerul...</option>
               {users.filter(u => u.role === 'MANAGER').map(m => (
                 <option key={m.id} value={m.id}>{m.name}</option>
@@ -143,7 +163,13 @@ const AdminDashboard = () => {
       <div className="section-card">
         <div className="list-header">
           <h3 className="section-title">Lista Utilizatorilor</h3>
-          <input type="text" className="search-input" placeholder="Caută..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          <input 
+            type="text" 
+            className="search-input" 
+            placeholder="Caută..." 
+            value={searchTerm} 
+            onChange={(e) => setSearchTerm(e.target.value)} 
+          />
         </div>
 
         <div className="table-wrapper">

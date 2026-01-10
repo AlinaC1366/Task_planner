@@ -3,18 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import '../styles/ExcutantDashboard.css';
 
-interface Project { id: string; name: string; }
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  status: 'PENDING' | 'COMPLETED';
-  project?: Project;
-}
-
 const ExecutantDashboard = () => {
   const navigate = useNavigate();
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchMyTasks = async () => {
@@ -36,26 +27,26 @@ const ExecutantDashboard = () => {
     navigate('/login');
   };
 
- const handleFinalize = async (taskId: string) => {
+  const handleFinalize = async (taskId) => {
     try {
-      // 1. Apelăm ruta exactă specificată în controllerul tău (Secțiunea 5)
+      // 1. Apelăm ruta exactă specificată în controllerul tău
       await api.patch(`/tasks/${taskId}/finalize`);
       
       // 2. Reîmprospătăm lista
       fetchMyTasks(); 
-      } catch (error: any) {
-        console.error("Eroare la finalizare:", error);
-        const msg = error.response?.data?.message || "Eroare necunoscută";
-        alert(`Nu s-a putut finaliza: ${msg}`);
-      }
- };
+    } catch (error) {
+      console.error("Eroare la finalizare:", error);
+      const msg = error.response?.data?.message || "Eroare necunoscută";
+      alert(`Nu s-a putut finaliza: ${msg}`);
+    }
+  };
 
   const groupedTasks = tasks.reduce((acc, task) => {
     const projectName = task.project?.name || 'Sarcini fără proiect';
     if (!acc[projectName]) acc[projectName] = [];
     acc[projectName].push(task);
     return acc;
-  }, {} as Record<string, Task[]>);
+  }, {});
 
   return (
     <div className="executant-dashboard">
