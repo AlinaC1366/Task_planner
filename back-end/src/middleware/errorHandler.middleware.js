@@ -1,15 +1,8 @@
-import { Request, Response, NextFunction } from "express";
-
 
 // Middleware Global de Erori (Plasa de siguranta)
 // Aici ajung toate erorile aruncate din aplicatie (prin next(error)).
 
-export const errorHandler = (
-  err: any,               
-  _req: Request,          
-  res: Response,          
-  _next: NextFunction    
-) => {
+export const errorHandler = (err, _req, res, _next) => {
 
   // 1. Logare pentru noi(Developperi)
   console.error("🔥 ERROR:", err);

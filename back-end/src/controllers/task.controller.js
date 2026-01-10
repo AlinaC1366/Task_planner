@@ -1,5 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
-import prisma from '../services/prisma.service';
+import prisma from '../services/prisma.service.js';
 
 // 1. CREATE TASK (Manager)
 // Ruta: POST /api/v1/projects/:projectId/tasks
@@ -9,12 +8,12 @@ import prisma from '../services/prisma.service';
 // - Task-ul porneste automat cu starea 'OPEN'.
 // - Trebuie sa verificam dacă Managerul detine proiectul in care vrea sa scrie
 
-export const createTask = async (req: Request, res: Response, next: NextFunction) => {
+export const createTask = async (req, res, next) => {
     const { title, description } = req.body;
     const { projectId } = req.params; // ID-ul proiectului din URL
 
     // Identificăm managerul logat prin Token
-    const managerId = (req as any).user.userId;
+    const managerId = req.user.userId;
 
     if(!title){
         return next({ status: 400, message: 'Titlul este obligatoriu.' });
@@ -65,7 +64,7 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
 // Ruta: GET /api/v1/projects/:projectId/tasks
 // SCOP: Vizualizarea tuturor task-urilor dintr-un proiect
 // DETALII: Facem JOIN cu utilizatorul asignat pentru a vedea cine lucreaza la task
-export const getTaskByProject = async (req: Request, res: Response, next: NextFunction) => {
+export const getTaskByProject = async (req, res, next) => {
     const { projectId } = req.params;
     try{
         const tasks = await prisma.task.findMany({
@@ -84,9 +83,10 @@ export const getTaskByProject = async (req: Request, res: Response, next: NextFu
 
 
 // 3. GET MY TASKS (Executant)
+// RUTA: GET /api/v1/tasks/my
 // SCOP: Executantul vede lista cu sarcinile alocate LUI
-export const getMyTasks = async (req: Request, res:Response, next: NextFunction) => {
-    const userId=(req as any).user.userId;
+export const getMyTasks = async (req, res, next) => {
+    const userId=req.user.userId;
 
     try{
         const tasks = await prisma.task.findMany({
@@ -104,12 +104,13 @@ export const getMyTasks = async (req: Request, res:Response, next: NextFunction)
 
 
 // 4. ALLOCATE TASK (Manager -> PENDING)
+// RUTA: PATCH /api/v1/tasks/:id/allocate
 // SCOP: Tranzitie de stare OPEN -> PENDING.
 // LOGICA: Managerul alege un executant si ii da task-ul.
-export const allocateTask = async (req: Request, res: Response, next: NextFunction) => {
+export const allocateTask = async (req, res, next) => {
     const { id } = req.params; // ID Task
     const { assignedToId } = req.body; // ID Executant (venit din dropdown-ul din frontend)
-    const managerId = (req as any).user.userId;
+    const managerId = req.user.userId;
 
     try{
         // 1. Luam task-ul vechi pentru a sti statusul anterior
@@ -151,9 +152,9 @@ export const allocateTask = async (req: Request, res: Response, next: NextFuncti
 // Ruta: PATCH /api/v1/tasks/:id/finalize
 // SCOP: Tranzitie de stare PENDING -> COMPLETED.
 // SECURITATE: Doar executantul proprietar are voie sa termine task-ul
-export const completeTask = async (req: Request, res: Response, next: NextFunction) => {
+export const completeTask = async (req, res, next) => {
     const { id } = req.params;
-    const userId = (req as any).user.userId;
+    const userId = req.user.userId;
 
     try{
         const currentTask = await prisma.task.findUnique({ where: { id }});
@@ -194,9 +195,9 @@ export const completeTask = async (req: Request, res: Response, next: NextFuncti
 // Ruta: PATCH /api/v1/tasks/:id/close
 // SCOP: Tranzitie finala COMPLETED -> CLOSED.
 // LOGICA: Managerul verifica munca si inchide task-ul
-export const closeTask = async (req: Request, res: Response, next: NextFunction) => {
+export const closeTask = async (req, res, next) => {
     const { id } =req.params;
-    const managerId = (req as any).user.userId;
+    const managerId = req.user.userId;
 
     try{
         const currentTask = await prisma.task.findUnique({ where : { id }});
@@ -241,7 +242,7 @@ export const closeTask = async (req: Request, res: Response, next: NextFunction)
 // SCOP: Stergerea unui task gresit
 // RESTRICTIE: Se poate sterge doar daca e 'OPEN'
 // Daca s-a inceput lucrul la el, nu se mai sterge.
-export const deleteTask = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteTask = async (req, res, next) => {
     const { id } = req.params;
 
     try{
@@ -251,8 +252,11 @@ export const deleteTask = async (req: Request, res: Response, next: NextFunction
             return next({ status: 404, message: 'Task negasit.' });
         }
 
-        if(task.status !== 'OPEN'){
-            return next({ status: 400, message: 'Poti sterge doar task-uri OPEN. Celelalte fac parte din istoric'} );
+        if(task.status !== 'OPEN' && task.status !== 'CLOSED'){
+            return next({ 
+                status: 400, 
+                message: 'Poti sterge doar task-uri OPEN sau CLOSED. Cele PENDING/COMPLETED sunt in lucru.'
+            });
         }
 
         // [CURATENIE] Stergem intai istoricul asociat (Foreign Key Constraint)

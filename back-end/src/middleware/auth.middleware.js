@@ -1,8 +1,4 @@
-
-
-import { Request, Response, NextFunction } from 'express';// Importă tipurile de bază de la Express pentru funcțiile middleware
-
-import jwt, { JwtPayload } from 'jsonwebtoken';// Importă jwt și JwtPayload pentru a lucra cu token-uri
+import jwt from 'jsonwebtoken';// Importă jwt și JwtPayload pentru a lucra cu token-uri
 
 
 const JWT_SECRET = process.env.JWT_SECRET;// Importă cheia secretă din mediul de rulare (obligatoriu pentru securitate)
@@ -26,8 +22,8 @@ if (!JWT_SECRET) {
 //  3. AUTORIZARE (Verificare Rol):
 //  - Daca ruta este destinata doar anumitor roluri (ex: doar ADMIN), 
 //  - verifica daca utilizatorul are privilegiile necesare
-export const authorize = (allowedRoles: string[] = []) => {
-    return (req: Request, res: Response, next: NextFunction) => {
+export const authorize = (allowedRoles = []) => {
+    return (req, res, next) => {
         const authHeader = req.headers.authorization;
 
         // 1. Verificam daca exista token-ul
@@ -38,11 +34,11 @@ export const authorize = (allowedRoles: string[] = []) => {
         const token = authHeader.split(' ')[1];
 
         try {
-            // 2. Verificam Token-ul (SIMPLIFICAT CU 'as any')
-            const decoded = jwt.verify(token,JWT_SECRET) as any;
+            // 2. Verificam Token-ul 
+            const decoded = jwt.verify(token,JWT_SECRET);
             
             // 3. Atasam userul (TypeScript nu mai comenteaza acum)
-            (req as any).user = decoded;
+            req.user = decoded;
 
             // 4. Verificam Rolul
             if (allowedRoles.length > 0 && !allowedRoles.includes(decoded.role)) {

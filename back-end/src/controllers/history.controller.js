@@ -1,11 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
-import prisma from '../services/prisma.service';
+import prisma from '../services/prisma.service.js';
 
 // --- GET MY HISTORY (Executant) ---
 // Ruta: GET /api/v1/history/my
 // SCOP: Executantul vede toate task-urile pe care le-a dus la bun sfarsit (CLOSED)
-export const getMyHistory = async (req: Request, res: Response, next:NextFunction) => {
-    const userId = (req as any).user.userId;
+export const getMyHistory = async (req, res, next) => {
+    const userId = req.user.userId;
 
     try{
         const closedTasks= await prisma.task.findMany({
@@ -34,9 +33,9 @@ export const getMyHistory = async (req: Request, res: Response, next:NextFunctio
 // --- GET SUBORDINATE HISTORY (Manager) ---
 // Ruta: GET /api/v1/history/subordinates/:userId
 // SCOP: Managerul vede ce a muncit un anumit angajat al lui
-export const getSubordinateHistory = async (req: Request, res: Response, next: NextFunction) => {
+export const getSubordinateHistory = async (req, res, next) => {
     const { userId } = req.params;// Id-ul angajatului pentru care se verifica progresul
-    const managerId = (req as any).user.userId;
+    const managerId = req.user.userId;
 
     try{
         const targetUser = await prisma.user.findUnique({

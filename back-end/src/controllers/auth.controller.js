@@ -1,9 +1,7 @@
 
-
-import { Request, Response, NextFunction } from 'express';
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'; 
-import prisma from '../services/prisma.service'; 
+import prisma from '../services/prisma.service.js'; 
 
 
 // Citim cheia secreta din fisierul .env.
@@ -18,7 +16,7 @@ if (!JWT_SECRET) {
 // --- LOGIN CONTROLLER ---
 // Functia pentru POST /api/v1/auth/login
 // Folosim async pentru ca aplicatia asteapta un raspuns de la baza de date
-export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+export const loginUser = async (req, res, next) => {
    
     const { email, password } = req.body;
 

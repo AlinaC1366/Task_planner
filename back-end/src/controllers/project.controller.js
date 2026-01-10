@@ -1,5 +1,4 @@
-import { Request,Response,NextFunction } from 'express';
-import prisma from '../services/prisma.service';
+import prisma from '../services/prisma.service.js';
 
 
 // --- 1. CREATE PROJECT ---
@@ -7,11 +6,11 @@ import prisma from '../services/prisma.service';
 // Acces: DOAR MANAGER
 // SCOP: Permite unui manager sa creeze un proiect nou
 // VALIDARI: Numele este obligatoriu. Proiectul se leaga automat de managerul logat
-export const createProject = async (req: Request, res: Response, next: NextFunction) => {
+export const createProject = async (req, res, next) => {
     const { name, description } = req.body;
 
     // Extragem ID-ul managerului din token (req.user)
-    const managerId = (req as any).user.userId;
+    const managerId = req.user.userId;
 
     if(!name){
         return next({ status: 400, message: 'Numele proiectului este obligatoriu.' });
@@ -36,8 +35,8 @@ export const createProject = async (req: Request, res: Response, next: NextFunct
 // Acces: DOAR MANAGER
 // SCOP: Returneaza lista de proiecte detinuta de managerul curent
 // DETALII: Include si un numarator de task-uri pentru fiecare proiect
-export const getMyProjects = async (req: Request, res: Response, next: NextFunction) => {
-    const managerId=(req as any).user.userId;
+export const getMyProjects = async (req, res, next) => {
+    const managerId=req.user.userId;
 
     try{
         const projects = await prisma.project.findMany({
@@ -60,7 +59,7 @@ export const getMyProjects = async (req: Request, res: Response, next: NextFunct
 // Ruta: GET /api/v1/projects/:id
 // Acces: MANAGER + EXECUTANT
 // SCOP: Afiseaza detaliile unui proiect specific si lista sa de task-uri
-export const getProjectById = async (req: Request, res: Response, next: NextFunction) =>{
+export const getProjectById = async (req, res, next) =>{
     const { id } = req.params;
     try{
         const project = await prisma.project.findUnique({
@@ -85,7 +84,7 @@ export const getProjectById = async (req: Request, res: Response, next: NextFunc
 // Ruta: DELETE /api/v1/projects/:id
 // Acces: DOAR MANAGER
 // LOGICA: Un proiect poate fi sters DOAR daca nu are task-uri active in el.
-export const deleteProject = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteProject = async (req, res, next) => {
     const { id } = req.params;
     try{
         // Pas 1: Verificam existenta si continutul

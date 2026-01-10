@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { getMyHistory, getSubordinateHistory } from '../controllers/history.controller';
-import { authorize } from '../middleware/auth.middleware';
+import { getMyHistory, getSubordinateHistory } from '../controllers/history.controller.js';
+import { authorize } from '../middleware/auth.middleware.js';
 
 const router = Router();
 

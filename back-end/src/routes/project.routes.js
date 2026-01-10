@@ -4,8 +4,8 @@ import {
     getMyProjects, 
     getProjectById, 
     deleteProject 
-} from '../controllers/project.controller';
-import { authorize } from '../middleware/auth.middleware';
+} from '../controllers/project.controller.js';
+import { authorize } from '../middleware/auth.middleware.js';
 
 const router = Router();
 

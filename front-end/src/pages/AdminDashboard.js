@@ -32,14 +32,6 @@ const AdminDashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
-    if (!emailRegex.test(formData.email)) {
-      alert("Formatul adresei de email este invalid!");
-      return;
-    }
-    
     try {
       if (editingUserId) {
         // Update utilizator existent

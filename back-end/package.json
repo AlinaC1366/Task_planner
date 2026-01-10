@@ -1,16 +1,12 @@
 {
-  "devDependencies": {
-    "@types/bcrypt": "^6.0.0",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.5",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^24.10.1",
+  "type": "module",
+
+    "devDependencies": {
     "dotenv-cli": "^11.0.0",
     "nodemon": "^3.1.11",
-    "prisma": "^6.19.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "prisma": "^6.19.0"
   },
+  
   "dependencies": {
     "@prisma/client": "^6.19.0",
     "bcrypt": "^6.0.0",
@@ -21,11 +17,11 @@
     "jsonwebtoken": "^9.0.2"
   },
   "scripts": {
-    "dev": "dotenv -e .env -- nodemon src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js"
+    "dev": "dotenv -e .env -- nodemon src/server.js",
+    "start": "node src/server.js"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "node prisma/seed.js"
+    
   }
 }

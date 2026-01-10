@@ -7,8 +7,8 @@ import {
     completeTask,
     closeTask,
     deleteTask
-} from '../controllers/task.controller';
-import { authorize } from '../middleware/auth.middleware';
+} from '../controllers/task.controller.js';
+import { authorize } from '../middleware/auth.middleware.js';
 
 const router = Router();
 

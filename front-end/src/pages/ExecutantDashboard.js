@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import '../styles/ExcutantDashboard.css';
+import '../styles/AdminDashboard.css';
 
 const ExecutantDashboard = () => {
   const navigate = useNavigate();
@@ -27,6 +27,7 @@ const ExecutantDashboard = () => {
     navigate('/login');
   };
 
+<<<<<<< HEAD:front-end/src/pages/ExecutantDashboard.js
   const handleFinalize = async (taskId) => {
     try {
       // 1. Apelăm ruta exactă specificată în controllerul tău
@@ -38,6 +39,15 @@ const ExecutantDashboard = () => {
       console.error("Eroare la finalizare:", error);
       const msg = error.response?.data?.message || "Eroare necunoscută";
       alert(`Nu s-a putut finaliza: ${msg}`);
+=======
+  const handleFinalize = async (taskId: string) => {
+    try {
+      // Asigură-te că endpoint-ul este corect (PUT sau PATCH)
+      await api.put(`/tasks/${taskId}/complete`);
+      fetchMyTasks(); // Refresh listă
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Eroare la finalizare");
+>>>>>>> main:front-end/src/pages/ExecutantDashboard.tsx
     }
   };
 
@@ -49,7 +59,7 @@ const ExecutantDashboard = () => {
   }, {});
 
   return (
-    <div className="executant-dashboard">
+    <div className="admin-dashboard">
       <header className="dashboard-header">
         <h1 className="dashboard-title">Dashboard-ul Meu</h1>
         <button className="btn-logout" onClick={handleLogout}>Log Out</button>
