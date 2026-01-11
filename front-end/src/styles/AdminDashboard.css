@@ -1,37 +1,36 @@
 @import './variables.css';
 
-/* 1. FIX GLOBAL PENTRU DIMENSIUNI ȘI AUTOFILL (GALBENUL DIN INPUT) */
-*, *::before, *::after {
+/* GLOBAL RESET PENTRU ADMIN */
+.admin-dashboard-container *, 
+.admin-dashboard-container *::before, 
+.admin-dashboard-container *::after {
   box-sizing: border-box !important;
 }
 
-/* Scăpăm de fundalul galben când browserul completează automat email-ul */
-input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
-  transition: background-color 5000s ease-in-out 0s;
-}
-/* --- 1. HEADER & LOG OUT --- */
-.dashboard-header {
+/* --- ADMIN HEADER --- */
+.admin-dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid var(--highlight-accent);
+  padding: 1rem 1.5rem; 
+  background: white; 
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  border-bottom: none;
 }
 
-.dashboard-title {
+.admin-dashboard-title {
   color: var(--text-main);
   margin: 0;
   font-size: 1.8rem;
   font-weight: 700;
 }
 
-.btn-logout {
+.admin-btn-logout {
   background-color: transparent;
-  color: #d32f2f; /* Roșu standard pentru ieșire */
+  color: #d32f2f;
   border: 1.5px solid #d32f2f;
   padding: 8px 20px;
   border-radius: 8px;
@@ -41,17 +40,13 @@ input:-webkit-autofill:focus {
   font-family: inherit;
 }
 
-.btn-logout:hover {
+.admin-btn-logout:hover {
   background-color: #d32f2f;
   color: white;
   box-shadow: 0 4px 10px rgba(211, 47, 47, 0.2);
 }
 
-.btn-logout:active {
-  transform: scale(0.95);
-}
-
-.admin-dashboard {
+.admin-dashboard-container {
   padding: 2rem;
   background-color: var(--bg-color);
   min-height: 100vh;
@@ -59,7 +54,7 @@ input:-webkit-autofill:focus {
   margin: 0 auto;
 }
 
-.section-card {
+.admin-section-card {
   background: white;
   padding: 1.5rem;
   border-radius: 12px;
@@ -67,7 +62,7 @@ input:-webkit-autofill:focus {
   margin-bottom: 2rem;
 }
 
-.section-title {
+.admin-section-title {
   color: var(--brand-main);
   border-bottom: 2px solid var(--highlight-accent);
   padding-bottom: 0.5rem;
@@ -75,19 +70,17 @@ input:-webkit-autofill:focus {
   font-size: 1.2rem;
 }
 
-/* --- 2. FORMULARUL PE UN RÂND (FIX ALINIERE) --- */
-.form-grid {
+/* --- ADMIN FORM --- */
+.admin-form-grid {
   display: flex;
   flex-direction: row; 
-  align-items: flex-start; /* Aliniem totul la marginea de sus a rândului */
+  align-items: flex-start; 
   gap: 12px;
-  flex-wrap: nowrap; /* Îl forțăm să nu sară pe rândul următor pe ecrane mari */
   flex-wrap: wrap; 
 }
 
-/* Toate elementele de input au exact 45px înălțime */
-.form-grid .login-input, 
-.form-grid select {
+.admin-form-grid .admin-input-field, 
+.admin-form-grid select {
   flex: 1;
   min-width: 150px;
   height: 45px; 
@@ -99,21 +92,19 @@ input:-webkit-autofill:focus {
   font-size: 0.95rem;
 }
 
-.form-grid .login-input:focus {
+.admin-form-grid .admin-input-field:focus {
   border-color: var(--brand-main);
 }
 
-/* Grupul de butoane - nu mai strică alinierea rândului */
-.form-actions {
+.admin-form-actions {
   display: flex;
   flex-direction: column; 
-  align-items: stretch;    
+  align-items: stretch;     
   flex-shrink: 0;
   min-width: 180px;
 }
 
-/* Butonul de Salvează/Creează are fix 45px */
-.login-button {
+.admin-submit-button {
   background-color: var(--brand-main) !important;
   color: white !important;
   border: none;
@@ -128,12 +119,11 @@ input:-webkit-autofill:focus {
   margin: 0;
 }
 
-.login-button:active {
+.admin-submit-button:active {
   transform: scale(0.98);
 }
 
-/* Link-ul de anulează stă cuminte sub buton fără să-l împingă în jos */
-.btn-cancel-link {
+.admin-btn-cancel-link {
   background: none !important;
   position: absolute;
   margin-top: 48px;
@@ -147,12 +137,12 @@ input:-webkit-autofill:focus {
   font-family: inherit;
 }
 
-.btn-cancel-link:hover {
+.admin-btn-cancel-link:hover {
   color: #d32f2f !important;
 }
 
-/* --- 3. LISTĂ HEADER ȘI SEARCH --- */
-.list-header {
+/* --- ADMIN LIST & TABLE --- */
+.admin-list-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -160,7 +150,7 @@ input:-webkit-autofill:focus {
   gap: 20px;
 }
 
-.search-input {
+.admin-search-input {
   padding: 10px 15px;
   border: 1.5px solid var(--border-color);
   border-radius: 8px;
@@ -168,25 +158,24 @@ input:-webkit-autofill:focus {
   outline: none;
 }
 
-/* --- 4. TABEL DESKTOP --- */
-.user-table {
+.admin-user-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.user-table th {
+.admin-user-table th {
   text-align: left;
   background-color: var(--brand-secondary);
   color: white;
   padding: 14px;
 }
 
-.user-table td {
+.admin-user-table td {
   padding: 14px;
   border-bottom: 1px solid #f0f0f0;
 }
 
-.btn-modify { 
+.admin-btn-modify { 
   background-color: var(--brand-main) !important;
   color: white !important; 
   border: none; 
@@ -194,44 +183,57 @@ input:-webkit-autofill:focus {
   border-radius: 6px; 
   cursor: pointer; 
   margin-right: 5px; 
-  font-size: 0.85rem; }
+  font-size: 0.85rem; 
+}
 
-.btn-delete { 
+.admin-btn-delete { 
   background-color: #d32f2f !important; 
   color: white !important; 
   border: none; 
   padding: 7px 14px; 
   border-radius: 6px; 
   cursor: pointer; 
-  font-size: 0.85rem; }
+  font-size: 0.85rem; 
+}
 
-/* --- 5. REPARARE MOBIL --- */
+.admin-status-badge {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+.admin-status-manager {  background-color: green; color: black}
+.admin-status-admin { background-color: red; color: black;}
+.admin-status-executant {  background-color: blue; color: black;}
+
+
+/* --- ADMIN RESPONSIVE --- */
 @media (max-width: 850px) {
-  .form-grid {
+  .admin-form-grid {
     flex-direction: column;
     align-items: stretch;
   }
   
-  .form-grid .login-input, 
-  .form-grid select,
-  .form-actions {
+  .admin-form-grid .admin-input-field, 
+  .admin-form-grid select,
+  .admin-form-actions {
     width: 100%;
     min-width: 100%;
   }
 
-  .list-header {
+  .admin-list-header {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .search-input {
+  .admin-search-input {
     width: 100%;
   }
 
-  .user-table thead { display: none; }
-  .user-table, .user-table tbody, .user-table tr, .user-table td { display: block; width: 100%; }
+  .admin-user-table thead { display: none; }
+  .admin-user-table, .admin-user-table tbody, .admin-user-table tr, .admin-user-table td { display: block; width: 100%; }
   
-  .user-table tr {
+  .admin-user-table tr {
     margin-bottom: 1.5rem;
     border: 1px solid var(--highlight-accent);
     border-radius: 12px;
@@ -240,14 +242,14 @@ input:-webkit-autofill:focus {
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   }
 
-  .user-table td {
+  .admin-user-table td {
     display: flex;
     justify-content: space-between;
     padding: 12px 0;
     border-bottom: 1px solid #eee;
   }
 
-  .user-table td::before {
+  .admin-user-table td::before {
     content: attr(data-label);
     font-weight: bold;
     color: var(--brand-main);
@@ -255,10 +257,10 @@ input:-webkit-autofill:focus {
     font-size: 0.75rem;
   }
 
-  .actions-cell {
+  .admin-actions-cell {
     flex-direction: column;
     gap: 10px;
     border: none !important;
-     padding-top: 15px !important;
+    padding-top: 15px !important;
   }
 }

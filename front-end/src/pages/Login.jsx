@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { login } from '../services/authService';
 import '../styles/Login.css';
 
-const LoginPage: React.FC = () => {
+const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -25,7 +25,7 @@ const LoginPage: React.FC = () => {
       } else if (data.user.role === 'EXECUTANT') {
         navigate('/executant'); 
       }
-    } catch (err: any) {
+    } catch (err) {
       setError(err || 'Eroare la conectare. Verificați datele.');
     } finally {
       setLoading(false);

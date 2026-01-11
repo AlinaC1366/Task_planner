@@ -1,0 +1,177 @@
+@import './variables.css';
+
+/* RESET LOCAL */
+.executant-dashboard-container *, 
+.executant-dashboard-container *::before, 
+.executant-dashboard-container *::after {
+  box-sizing: border-box !important;
+}
+
+.executant-dashboard-container {
+    padding: 2rem;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+/* HEADER */
+.executant-dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem 1.5rem;
+    background: #fff; 
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.executant-dashboard-title {
+    font-size: 1.5rem;
+    color: var(--brand-main);
+    margin: 0;
+}
+
+.executant-btn-logout {
+  background-color: transparent;
+  color: #d32f2f;
+  border: 1.5px solid #d32f2f;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.executant-btn-logout:hover {
+  background-color: #d32f2f;
+  color: white;
+  box-shadow: 0 4px 10px rgba(211, 47, 47, 0.2);
+}
+
+/* CARDS & TABLES */
+.executant-section-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.executant-project-group {
+    margin-top: 20px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.executant-project-header {
+    background: #d3cada;
+    padding: 12px 20px;
+    margin: 0;
+    border-left: 5px solid var(--brand-main);
+}
+
+.executant-user-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.executant-user-table th {
+    background: #fafafa;
+    text-align: left;
+    padding: 12px;
+    border-bottom: 2px solid #eee;
+}
+
+.executant-user-table td {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* BADGES */
+.executant-status-badge {
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.executant-status-pending { background: #e0b979; color: #ef6c00; }
+.executant-status-closed { background: #64bd6c; color: #2e7d32; }
+.executant-status-completed { background: rgb(233, 215, 135); color:rgb(109, 100, 61)}
+
+/* BUTON FINALIZEAZA */
+.executant-btn-finalize {
+    background-color: var(--brand-main) !important;
+    color: white !important;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.executant-btn-finalize:hover {
+    background-color: var(--brand-secondary) !important;
+}
+
+/* BUTON ISTORIC (FLOATING RIGHT) */
+.executant-btn-history {
+    position: fixed;
+    bottom: 30px;
+    right: 30px; 
+    background-color: var(--brand-main) !important;
+    color: white !important;
+    border: none !important;
+    padding: 15px 25px;
+    border-radius: 30px;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(106, 27, 154, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 1000;
+}
+
+.executant-btn-history:hover {
+    transform: scale(1.05);
+    background-color: var(--brand-secondary) !important;
+}
+
+.executant-task-done-check {
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+/* Stil pentru butonul de arhivare (roșu sau gri închis) */
+.executant-btn-archive {
+  background-color: #e74c3c; /* Roșu */
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  margin-left: 8px;
+}
+
+.executant-btn-archive:hover {
+  background-color: #c0392b;
+}
+
+/* Un container mic pentru iconița de check și buton */
+.executant-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.executant-check-icon {
+  color: #27ae60;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
