@@ -13,7 +13,6 @@ const AdminDashboard = () => {
     name: '', email: '', password: '', role: 'EXECUTANT', managerId: ''
   });
 
-  // Încărcăm lista de utilizatori
   const fetchUsers = async () => {
     try {
       const response = await api.get('/users');
@@ -26,19 +25,17 @@ const AdminDashboard = () => {
   useEffect(() => { fetchUsers(); }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token'); // Curățăm token-ul
-    navigate('/login'); // Trimitem la login
+    localStorage.removeItem('token');
+    navigate('/login');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (editingUserId) {
-        // Update utilizator existent
         await api.put(`/users/${editingUserId}`, formData);
         alert("Utilizator actualizat cu succes!");
       } else {
-        // Creare utilizator nou
         await api.post('/users', formData);
         alert("Utilizator creat cu succes!");
       }
@@ -69,7 +66,7 @@ const AdminDashboard = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Sigur vrei să ștergi acest utilizator?")) {
       try {
-        await api.delete(`/users/${id}`); // Ștergere utilizator
+        await api.delete(`/users/${id}`);
         fetchUsers();
       } catch (error) {
         alert("Eroare la ștergere");
@@ -83,26 +80,26 @@ const AdminDashboard = () => {
   );
 
   return (
-    <div className="admin-dashboard">
-      <div className="dashboard-header">
-        <h1 className="dashboard-title">Gestiune Echipă (ADMIN)</h1>
-        <button className="btn-logout" onClick={handleLogout}>Log Out</button>
+    <div className="admin-dashboard-container">
+      <div className="admin-dashboard-header">
+        <h1 className="admin-dashboard-title">Gestiune Echipă (ADMIN)</h1>
+        <button className="admin-btn-logout" onClick={handleLogout}>Log Out</button>
       </div>
 
-      <div className="section-card">
-        <h3 className="section-title">
+      <div className="admin-section-card">
+        <h3 className="admin-section-title">
           {editingUserId ? `Editează: ${formData.name}` : "Adaugă Utilizator Nou"}
         </h3>
-        <form onSubmit={handleSubmit} className="form-grid">
+        <form onSubmit={handleSubmit} className="admin-form-grid">
           <input 
-            className="login-input" 
+            className="admin-input-field" 
             placeholder="Nume" 
             value={formData.name} 
             onChange={e => setFormData({...formData, name: e.target.value})} 
             required 
           />
           <input 
-            className="login-input" 
+            className="admin-input-field" 
             type="email" 
             placeholder="Email" 
             value={formData.email} 
@@ -110,7 +107,7 @@ const AdminDashboard = () => {
             required 
           />
           <input 
-            className="login-input" 
+            className="admin-input-field" 
             type="password" 
             placeholder={editingUserId ? "Parolă nouă (opțional)" : "Parolă"} 
             value={formData.password} 
@@ -119,7 +116,7 @@ const AdminDashboard = () => {
           />
           
           <select 
-            className="login-input" 
+            className="admin-input-field" 
             value={formData.role} 
             onChange={e => setFormData({...formData, role: e.target.value})}
           >
@@ -130,7 +127,7 @@ const AdminDashboard = () => {
 
           {formData.role === 'EXECUTANT' && (
             <select 
-              className="login-input" 
+              className="admin-input-field" 
               value={formData.managerId} 
               onChange={e => setFormData({...formData, managerId: e.target.value})}
             >
@@ -141,31 +138,31 @@ const AdminDashboard = () => {
             </select>
           )}
 
-          <div className="form-actions">
-            <button type="submit" className="login-button">
+          <div className="admin-form-actions">
+            <button type="submit" className="admin-submit-button">
               {editingUserId ? 'SALVEAZĂ' : 'CREAZĂ CONT'}
             </button>
             {editingUserId && (
-              <button type="button" className="btn-cancel-link" onClick={resetForm}>Anulează</button>
+              <button type="button" className="admin-btn-cancel-link" onClick={resetForm}>Anulează</button>
             )}
           </div>
         </form>
       </div>
 
-      <div className="section-card">
-        <div className="list-header">
-          <h3 className="section-title">Lista Utilizatorilor</h3>
+      <div className="admin-section-card">
+        <div className="admin-list-header">
+          <h3 className="admin-section-title">Lista Utilizatorilor</h3>
           <input 
             type="text" 
-            className="search-input" 
+            className="admin-search-input" 
             placeholder="Caută..." 
             value={searchTerm} 
             onChange={(e) => setSearchTerm(e.target.value)} 
           />
         </div>
 
-        <div className="table-wrapper">
-          <table className="user-table">
+        <div className="admin-table-wrapper">
+          <table className="admin-user-table">
             <thead>
               <tr>
                 <th>Nume</th>
@@ -176,17 +173,17 @@ const AdminDashboard = () => {
             </thead>
             <tbody>
               {filteredUsers.map(user => (
-                <tr key={user.id} className={editingUserId === user.id ? 'editing-row' : ''}>
+                <tr key={user.id} className={editingUserId === user.id ? 'admin-editing-row' : ''}>
                   <td data-label="Nume">{user.name}</td>
                   <td data-label="Email">{user.email}</td>
                   <td data-label="Rol">
-                    <span className={`status-badge ${user.role === 'MANAGER' ? 'status-pending' : user.role === 'ADMIN' ? 'status-closed' : 'status-open'}`}>
+                    <span className={`admin-status-badge ${user.role === 'MANAGER' ? 'admin-status-manager' : user.role === 'ADMIN' ? 'admin-status-admin' : 'admin-status-executant'}`}>
                       {user.role}
                     </span>
                   </td>
-                  <td data-label="Acțiuni" className="actions-cell">
-                    <button className="btn-modify" onClick={() => handleEditClick(user)}>Modifică</button>
-                    <button className="btn-delete" onClick={() => handleDelete(user.id)}>Șterge</button>
+                  <td data-label="Acțiuni" className="admin-actions-cell">
+                    <button className="admin-btn-modify" onClick={() => handleEditClick(user)}>Modifică</button>
+                    <button className="admin-btn-delete" onClick={() => handleDelete(user.id)}>Șterge</button>
                   </td>
                 </tr>
               ))}

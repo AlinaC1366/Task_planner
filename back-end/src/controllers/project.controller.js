@@ -84,32 +84,41 @@ export const getProjectById = async (req, res, next) =>{
 // Ruta: DELETE /api/v1/projects/:id
 // Acces: DOAR MANAGER
 // LOGICA: Un proiect poate fi sters DOAR daca nu are task-uri active in el.
+// projectController.js
+
 export const deleteProject = async (req, res, next) => {
     const { id } = req.params;
     try{
-        // Pas 1: Verificam existenta si continutul
+        // 1. Verificăm existența
         const project = await prisma.project.findUnique({
             where: { id },
-            include: {
-                tasks: true
-            }
+            include: { tasks: true }
         });
+        
         if(!project){
             return next({ status: 404, message: 'Proiectul nu a fost gasit.' });
         }
 
-        // Pas 2: Validare de Integritate
-        if(project.tasks.length >0){
-            return next({ status: 400, message: 'Nu poti sterge un proiect care are task-uri active! Sterge task-urile intai. '});
+        // 2. Validare Business: Nu ștergem dacă sunt task-uri în lucru
+        const activeTasks = project.tasks.filter(task => 
+            ['OPEN', 'PENDING'].includes(task.status)
+        );
+
+        if (activeTasks.length > 0) {
+            return next({ 
+                status: 400, 
+                message: `Nu poți șterge proiectul! Există încă ${activeTasks.length} task-uri active.` 
+            });
         }
 
-        // Pas 3: Stergerea efectiva
-        await prisma.project.delete({ where: { id }});
+        // 3. ȘTERGEM DOAR PROIECTUL
+        // Prisma va șterge automat: Proiect -> Task-uri -> Istoric
+        await prisma.project.delete({ where: { id } });
 
         return res.status(204).send();
-    }catch (error){
-        
-        console.error('❌ Eroare ștergere proiect:',error);
+
+    } catch (error){
+        console.error('❌ Eroare ștergere proiect:', error);
         next(error);
     }
 };

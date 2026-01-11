@@ -1,52 +1,48 @@
 @import './variables.css';
 
-/* 1. FIX GLOBAL & AUTOFILL */
-*, *::before, *::after {
+/* RESET LOCAL */
+.manager-dashboard-container *, 
+.manager-dashboard-container *::before, 
+.manager-dashboard-container *::after {
   box-sizing: border-box !important;
 }
 
-input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
-  transition: background-color 5000s ease-in-out 0s;
-}
-
-/* --- CONTAINER PRINCIPAL --- */
-.dashboard-container {
+/* --- LAYOUT PRINCIPAL --- */
+.manager-dashboard-container {
   padding: 2rem;
   background-color: var(--bg-color);
   min-height: 100vh;
   max-width: 1300px;
   margin: 0 auto;
-  font-family: inherit;
 }
 
-/* --- HEADER (STIL ADMIN) --- */
-.dashboard-header {
+.manager-dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
-  padding-bottom: 1rem;
+  padding: 1.5rem;
+  background: #fff;
   border-bottom: 2px solid var(--highlight-accent);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.dashboard-header h1 {
+.manager-dashboard-header h1 {
   color: var(--text-main);
   margin: 0;
   font-size: 1.8rem;
   font-weight: 700;
 }
 
-.dashboard-header p {
+.manager-dashboard-header p {
   color: var(--brand-main);
   font-weight: 700;
   margin: 0;
 }
 
-/* --- ERORI --- */
-.error-message {
+/* --- COMPONENTE GENERALE --- */
+.manager-error-message {
   background-color: #ffdada;
   color: #d32f2f;
   padding: 1rem;
@@ -55,9 +51,7 @@ input:-webkit-autofill:focus {
   border-left: 5px solid #d32f2f;
 }
 
-/* --- SECTIUNI (CA SECTION-CARD) --- */
-.new-project-section, 
-.projects-list-section {
+.manager-new-project-section {
   background: white;
   padding: 1.5rem;
   border-radius: 12px;
@@ -65,8 +59,7 @@ input:-webkit-autofill:focus {
   margin-bottom: 2rem;
 }
 
-.new-project-section h2,
-.projects-list-section h2 {
+.manager-new-project-section h2 {
   color: var(--brand-main);
   border-bottom: 2px solid var(--highlight-accent);
   padding-bottom: 0.5rem;
@@ -74,8 +67,8 @@ input:-webkit-autofill:focus {
   font-size: 1.2rem;
 }
 
-/* --- FORMULARUL (STIL FORM-GRID) --- */
-.project-form {
+/* --- FORMULAR PROIECT (CREATE) --- */
+.manager-project-form {
   display: flex;
   flex-direction: row; 
   align-items: flex-start;
@@ -83,8 +76,8 @@ input:-webkit-autofill:focus {
   flex-wrap: wrap; 
 }
 
-.project-form input, 
-.project-form textarea {
+.manager-project-form input, 
+.manager-project-form textarea {
   flex: 1;
   min-width: 200px;
   height: 45px; 
@@ -97,18 +90,7 @@ input:-webkit-autofill:focus {
   font-family: inherit;
 }
 
-.project-form textarea {
-  padding-top: 10px;
-  height: 45px; /* Mentinem alinierea la 45px ca in Admin */
-  resize: none;
-}
-
-.project-form input:focus,
-.project-form textarea:focus {
-  border-color: var(--brand-main);
-}
-
-.project-form button {
+.manager-project-form button {
   background-color: var(--brand-main) !important;
   color: white !important;
   border: none;
@@ -121,18 +103,18 @@ input:-webkit-autofill:focus {
   transition: transform 0.1s;
 }
 
-.project-form button:active {
+.manager-project-form button:active {
   transform: scale(0.98);
 }
 
-/* --- GRID PROIECTE & CARDURI --- */
-.projects-grid {
+/* --- GRID & CARDURI PROIECTE --- */
+.manager-projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
 }
 
-.project-card {
+.manager-project-card {
   border: 1.5px solid var(--highlight-accent);
   border-radius: 12px;
   padding: 1.2rem;
@@ -143,102 +125,200 @@ input:-webkit-autofill:focus {
   gap: 10px;
 }
 
-.project-card:hover {
+.manager-project-card:hover {
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   border-color: var(--brand-main);
 }
 
-.project-card h3 {
-  margin: 0;
-  color: var(--brand-secondary);
-  font-size: 1.1rem;
-}
-
-.project-card p {
-  color: #666;
-  font-size: 0.9rem;
-  margin: 0;
-  min-height: 40px;
-}
-
-.project-stats {
-  font-size: 0.85rem;
-  padding: 8px 0;
-  border-top: 1px solid #eee;
-}
-
-.project-stats strong {
-  color: var(--brand-main);
-}
-
-/* --- BUTON STERGERE (STIL BTN-DELETE) --- */
-.delete-btn {
-  background-color: #d32f2f !important; 
-  color: white !important; 
-  border: none; 
-  padding: 10px 14px; 
-  border-radius: 8px; 
-  cursor: pointer; 
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: opacity 0.2s;
-}
-
-.delete-btn:hover {
-  opacity: 0.9;
-}
-
-/* --- RESPONSIVE --- */
-@media (max-width: 850px) {
-  .project-form {
-    flex-direction: column;
-  }
-  
-  .project-form input, 
-  .project-form textarea,
-  .project-form button {
-    width: 100%;
-  }
-
-  .projects-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Stil pentru Header-ul cardului de proiect */
-.project-card-header {
+.manager-project-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
 }
 
-.task-count-badge {
+.manager-project-card h3 {
+  margin: 0;
+  color: var(--brand-secondary);
+  font-size: 1.1rem;
+}
+
+.manager-task-count-badge {
   background: var(--highlight-accent);
   color: var(--brand-secondary);
   padding: 2px 8px;
   border-radius: 12px;
-  font-size: 0.75rem;
+  font-size: 0.75rem; 
   font-weight: bold;
 }
 
-/* Caseta de adăugare task rapid */
-.add-task-box {
+.manager-project-desc {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+  min-height: 40px;
+  overflow-wrap: break-word;
+  word-break: break-word;    
+  hyphens: auto;            
+}
+
+.manager-project-card-footer {
+  margin-top: auto;
+}
+
+/* --- TASK LIST & TASK ITEMS --- */
+.manager-tasks-list-container {
+  margin: 15px 0;
+  text-align: left;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+
+.manager-task-card-item {
   display: flex;
+  flex-direction: column;
+  padding: 12px;
+  border-bottom: 1px solid #f0f0f0;
+  background-color: #fff;
+  transition: background-color 0.2s;
+}
+
+.manager-task-card-item:hover {
+  background-color: #fafafa;
+}
+
+.manager-task-info {
+  display: flex;
+  flex-wrap: wrap;      
+  align-items: center;   
+  gap: 8px;          
+  width: 100%;
+}
+
+.manager-task-info strong {
+  font-size: 1rem;
+  color: var(--text-main);
+  order: 1;              
+  flex: 1;             
+  margin-right: 10px;
+}
+
+.manager-task-info .manager-status-badge {
+  order: 2;             
+  flex-shrink: 0;         
+  font-size: 0.75rem;    
+  padding: 4px 10px;
+}
+
+.manager-task-info p {
+  order: 3;             
+  width: 100%;           
+  margin: 6px 0 0 0;   
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.4;      
+  overflow-wrap: break-word; 
+  word-break: break-word;
+}
+
+/* --- CONTROLS ALOCARE & INPUT-URI MICI --- */
+.manager-allocation-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px; 
+  margin-top: 10px;
+  width: 100%;
+}
+
+.manager-executant-select-small {
+  flex: 1;
+  height: 36px;
+  padding: 0 10px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 6px;
+  background-color: white;
+  font-size: 0.85rem;
+  font-family: inherit;
+  color: var(--text-main);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.manager-executant-select-small:focus {
+  border-color: var(--brand-main);
+}
+
+.manager-btn-small {
+  height: 36px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  padding: 0 12px;
+}
+
+.manager-btn-small:active {
+  transform: scale(0.96);
+}
+
+.manager-btn-allocate {
+  background-color: var(--brand-main);
+  color: white;
+}
+.manager-btn-allocate:hover {
+  opacity: 0.9;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.manager-btn-close-task {
+  background-color: #28a745;
+  color: white;
+  flex: 1;
+}
+.manager-btn-close-task:hover {
+  background-color: #218838;
+}
+
+.manager-btn-delete-small {
+  background-color: #ffebee;
+  color: #d32f2f;
+  width: 36px;
+  padding: 0;
+  font-size: 1rem;
+}
+.manager-btn-delete-small:hover {
+  background-color: #d32f2f;
+  color: white;
+}
+
+/* --- INPUT CREARE TASK RAPID --- */
+.manager-add-task-box {
+  display: flex;
+  flex-direction: column;
   gap: 5px;
+  width: 100%;
   margin: 15px 0;
   padding-top: 15px;
   border-top: 1px dashed var(--highlight-accent);
 }
 
-.add-task-box input {
+.manager-add-task-box input {
   flex: 1;
-  height: 35px !important; /* Mai mic decât input-ul de proiect */
+  height: 35px !important;
   font-size: 0.85rem !important;
   border: 1px solid var(--border-color) !important;
+  border-radius: 6px;
+  padding: 0 10px;
 }
 
-.add-task-box button {
+.manager-add-task-box button {
   width: 35px;
   height: 35px;
   background: var(--brand-main);
@@ -252,115 +332,68 @@ input:-webkit-autofill:focus {
   align-items: center;
   justify-content: center;
 }
-
-.add-task-box button:hover {
+.manager-add-task-box button:hover {
   background: var(--brand-secondary);
 }
 
-.project-card-footer {
-  margin-top: auto;
+/* --- STATUS BADGES --- */
+.manager-status-badge {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-left: 10px;
 }
 
-.add-task-container {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 15px 0;
-  padding: 15px 0;
-  border-top: 1px solid var(--highlight-accent);
-}
+.manager-status-open { background-color: #28a745; color: white; }
+.manager-status-pending { background-color: #ffc107; color: black; }
+.manager-status-completed { background-color: #28a745; color: white; }
+.manager-status-closed { background-color: #dc3545; color: white; }
 
-.task-input-field, .executant-select {
-  height: 40px !important;
-  border: 1.5px solid var(--border-color) !important;
-  border-radius: 6px;
-  padding: 0 10px;
-  font-family: inherit;
-  font-size: 0.9rem;
-}
-
-.btn-add-task {
-  background-color: var(--brand-secondary) !important;
-  color: white !important;
-  border: none;
-  height: 40px;
-  border-radius: 6px;
+/* --- BUTOANE GENERALE --- */
+.manager-delete-btn {
+  background-color: #d32f2f !important; 
+  color: white !important; 
+  border: none; 
+  padding: 10px 14px; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  font-size: 0.85rem;
   font-weight: 600;
-  cursor: pointer;
+  transition: opacity 0.2s;
 }
 
-.btn-add-task:hover {
-  background-color: var(--brand-main) !important;
+.manager-full-width {
+  width: 100%;
+  margin-top: 15px;
 }
 
-.delete-btn {
-    margin-top: 10px;
+.manager-delete-btn:hover {
+  opacity: 0.9;
 }
 
-/* Stiluri pentru Status-uri */
-.status-badge {
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-size: 0.7rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    margin-left: 10px;
+.manager-logout-btn {
+  background-color: #d32f2f;
+  margin-top: 0;
+}
+.manager-logout-btn:hover {
+  background-color: #b71c1c !important;
 }
 
-.status-open { background-color: #28a745; color: white; }      /* Verde */
-.status-pending { background-color: #ffc107; color: black; }   /* Galben */
-.status-completed { background-color: #28a745; color: white; } /* Verde */
-.status-closed { background-color: #dc3545; color: white; }    /* Roșu */
-
-.tasks-list-container {
-    margin: 15px 0;
-    text-align: left;
-    border-top: 1px solid #eee;
-    padding-top: 10px;
-}
-
-.task-card-item {
-    display: flex;
+/* --- RESPONSIVE --- */
+@media (max-width: 850px) {
+  .manager-project-form {
     flex-direction: column;
-    padding: 8px;
-    border-bottom: 1px solid #f9f9f9;
-}
+  }
+  
+  .manager-project-form input, 
+  .manager-project-form textarea,
+  .manager-project-form button {
+    width: 100%;
+  }
 
-.task-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.allocation-controls {
-    display: flex;
-    gap: 5px;
-    margin-top: 5px;
-}
-
-.allocation-controls select {
-    font-size: 0.8rem;
-    padding: 2px;
-}
-
-.allocation-controls button {
-    padding: 2px 8px;
-    font-size: 0.8rem;
-}
-
-.logout-btn {
-    border: none;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
-
-.logout-btn:hover {
-    background-color: #5a6268 !important; /* Un gri mai închis la hover */
-}
-
-.dashboard-header {
-    background: #fff;
-    padding: 20px;
-    border-bottom: 2px solid --brand-main ; /* Sau culoarea ta dominantă */
-    margin-bottom: 30px;
+  .manager-projects-grid {
+    grid-template-columns: 1fr;
+  }
 }

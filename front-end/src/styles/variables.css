@@ -1,8 +1,9 @@
 :root {
   --bg-color: #F4EBE8;
+  --bg-light: #d197be;
   --text-main: #1A1A1D;
   --brand-main: #6A1E55;
   --brand-secondary: #3B1C32;
   --border-color: #A64D79;
-  --highlight-accent: #E0ACD5;
+  --highlight-accent: #d182c0;
 }
