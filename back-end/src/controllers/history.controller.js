@@ -47,20 +47,28 @@ export const getSubordinateHistory = async (req, res, next) => {
             return next({ status:404, message: 'Utilizatorul nu exista. ' });
         }
 
-        const closedTasks = await prisma.task.findMany({
+        // Preluam TOATE task-urile (indiferent de status)
+        const allTasks = await prisma.task.findMany({
             where: {
-                assignedToId: userId,
-                status: 'CLOSED'
+                assignedToId: userId
+                // Am eliminat status: 'CLOSED' pentru a le vedea pe toate
             },
             include: {
                 project: { select: { name: true } }
             },
             orderBy: {
-                closedAt: 'desc'
+                updatedAt: 'desc' // Sortăm după ultima modificare pentru a vedea progresul recent
             }
         });
 
-        return res.status(200).json(closedTasks);
+        
+        return res.status(200).json({
+            user: {
+                id: targetUser.id,
+                name: targetUser.name
+            },
+            tasks: allTasks
+        });
 
     }catch(error){
         console.error("❌ Eroare istoric subordonat:",error);

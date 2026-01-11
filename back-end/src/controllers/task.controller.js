@@ -37,7 +37,8 @@ export const createTask = async (req, res, next) => {
                 description,
                 status: 'OPEN', // Hardcodat: Orice task incepe ca OPEN
                 projectId: projectId,
-                creatorId: managerId
+                creatorId: managerId,
+                deadline: deadline ? new Date(deadline) : null
 
             }
         });
