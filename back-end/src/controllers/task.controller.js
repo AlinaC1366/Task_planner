@@ -9,7 +9,7 @@ import prisma from '../services/prisma.service.js';
 // - Trebuie sa verificam dacă Managerul detine proiectul in care vrea sa scrie
 
 export const createTask = async (req, res, next) => {
-    const { title, description } = req.body;
+    const { title, description, deadline } = req.body;
     const { projectId } = req.params; // ID-ul proiectului din URL
 
     // Identificăm managerul logat prin Token
@@ -35,7 +35,7 @@ export const createTask = async (req, res, next) => {
             data: {
                 title,
                 description,
-                status: 'OPEN', // Hardcodat: Orice task incepe ca OPEN
+                status: 'OPEN', // Orice task incepe ca OPEN
                 projectId: projectId,
                 creatorId: managerId,
                 deadline: deadline ? new Date(deadline) : null
@@ -43,7 +43,7 @@ export const createTask = async (req, res, next) => {
             }
         });
 
-        // [ISTORIC] Opțional: Notam crearea in istoric
+        // Notam crearea in istoric
         await prisma.taskHistory.create({
             data: {
                 taskId: task.id,
@@ -67,15 +67,51 @@ export const createTask = async (req, res, next) => {
 // DETALII: Facem JOIN cu utilizatorul asignat pentru a vedea cine lucreaza la task
 export const getTaskByProject = async (req, res, next) => {
     const { projectId } = req.params;
+    const managerId = req.user.userId;
+
     try{
+        
+        const project = await prisma.project.findUnique({
+            where: { id: projectId },
+            select: { managerId: true }
+        });
+
+        if (!project || project.managerId !== managerId) {
+            return next({ status: 403, message: 'Nu aveți permisiunea de a vizualiza sarcinile acestui proiect.' });
+        }
+
         const tasks = await prisma.task.findMany({
             where: { projectId },
-            include: {
-                // Aducem doar numele și emailul executantului, nu tot obiectul user (fara parola!)
-                assignedTo: { select: { name: true, email: true } }
-            }
+            include: { assignedTo: { select: { name: true, email: true } } },
+            orderBy: { deadline: 'asc'}
         });
-        return res.status(200).json(tasks);
+
+        const now = new Date();
+
+        // Aplicam calculul de timp pentru fiecare task din proiect
+        const enrichedTasks = tasks.map(task => {
+            if (!task.deadline) {
+                return { 
+                    ...task, 
+                    daysRemaining: null, 
+                    isOnTime: true,
+                    isOverdue: false 
+                };
+            }
+
+        const deadline = new Date(task.deadline);
+        const diffInMs = deadline - now;
+        const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+
+        return {
+                ...task,
+                daysRemaining: diffInDays, // Este la timp daca deadline-ul este azi sau in viitor
+                isOnTime: diffInDays >= 0,// Este întarziat doar daca a trecut termenul si task-ul nu e gata
+                isOverdue: diffInDays < 0 && !['COMPLETED', 'CLOSED'].includes(task.status)
+            };
+        });
+
+        return res.status(200).json(enrichedTasks);
     }catch(error){
         console.error(`❌ Eroare listare task-uri din proiectul cu id-ul ${projectId}:`, error);
         next(error);
@@ -91,12 +127,29 @@ export const getMyTasks = async (req, res, next) => {
 
     try{
         const tasks = await prisma.task.findMany({
-            where: { assignedToId: userId }, // Filtru: Sarcinile mele 
-            include: {
-                project: { select: { name: true}} // Context: Proiectul din care face parte task-ul
-            }
+            where: { assignedToId: userId },
+            include: { project: { select: { name: true } } },
+            orderBy: { deadline: 'asc' } 
         });
-        return res.status(200).json(tasks);
+
+        const now = new Date();
+
+        const enrichedTasks = tasks.map(task => {
+            if (!task.deadline) return { ...task, daysRemaining: null, isOnTime: true };
+
+            const diffInMs = new Date(task.deadline) - now;
+            const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+
+            return {
+                ...task,
+                daysRemaining: diffInDays,
+                isOnTime: diffInDays >= 0, 
+                isOverdue: diffInDays < 0 && !['COMPLETED', 'CLOSED'].includes(task.status)
+            };
+        });
+
+        return res.status(200).json(enrichedTasks);
+
     }catch(error){
         console.error(" ❌ Eroare listare task-uri proprii:",error);
         next(error);

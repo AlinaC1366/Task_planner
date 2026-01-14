@@ -47,27 +47,35 @@ export const getSubordinateHistory = async (req, res, next) => {
             return next({ status:404, message: 'Utilizatorul nu exista. ' });
         }
 
-        // Preluam TOATE task-urile (indiferent de status)
-        const allTasks = await prisma.task.findMany({
+        // Preluăm DOAR task-urile finalizate
+        const closedTasks = await prisma.task.findMany({
             where: {
-                assignedToId: userId
-                // Am eliminat status: 'CLOSED' pentru a le vedea pe toate
+                assignedToId: userId,
+                status: 'CLOSED' // Filtru pentru task-uri închise
             },
             include: {
                 project: { select: { name: true } }
             },
             orderBy: {
-                updatedAt: 'desc' // Sortăm după ultima modificare pentru a vedea progresul recent
+                closedAt: 'desc' // Cele mai recente finalizări primele
             }
         });
 
-        
+        // Calculăm dacă au fost finalizate după deadline 
+        const historyWithPerformance = closedTasks.map(task => {
+            const finishedLate = task.deadline && task.closedAt && task.closedAt > task.deadline;
+            return {
+                ...task,
+                finishedLate: !!finishedLate
+            };
+        });
+
         return res.status(200).json({
             user: {
                 id: targetUser.id,
                 name: targetUser.name
             },
-            tasks: allTasks
+            tasks: historyWithPerformance
         });
 
     }catch(error){
