@@ -2,6 +2,7 @@
 
 Această documentație acoperă instalarea, configurarea și utilizarea aplicației **Task Planner**. Aplicația este de tip **Full Stack**, compusă dintr-un server (Backend) și o interfață client (Frontend).
 
+" ``` "
 # Structura Proiectului
 └── alinac1366-task_planner/
     ├── README.md
@@ -65,6 +66,7 @@ Această documentație acoperă instalarea, configurarea și utilizarea aplicaț
                 ├── _metadata.json
                 └── package.json
 
+" ``` "
 
 ---
 
