@@ -9,13 +9,6 @@ const HistoryPage = () => {
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState('');
   
-  // State-uri pentru Manager
-  const [executants, setExecutants] = useState([]);
-  const [selectedExecutantId, setSelectedExecutantId] = useState('');
-  
-  // viewMode decide dacă arătăm tot (DEFAULT) sau filtrat pe om (USER_SPECIFIC)
-  const [viewMode, setViewMode] = useState('DEFAULT'); 
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,7 +19,6 @@ const HistoryPage = () => {
         setRole(decoded.role);
         
         if (decoded.role === 'MANAGER') {
-            fetchExecutants();
             fetchGeneralHistoryForManager();
         } else {
             fetchMyHistory();
@@ -41,29 +33,11 @@ const HistoryPage = () => {
 
   // --- API CALLS ---
 
-  const fetchExecutants = async () => {
-      try {
-          const res = await api.get('/users'); 
-          setExecutants(res.data.filter(u => u.role === 'EXECUTANT'));
-      } catch (err) { console.error("Eroare la încărcarea executanților"); }
-  };
-
   const fetchMyHistory = async () => {
       setLoading(true);
       try {
           const res = await api.get('/history/my');
           groupAndSetTasks(res.data);
-          setViewMode('DEFAULT');
-      } catch (err) { console.error(err); } 
-      finally { setLoading(false); }
-  };
-
-  const fetchSubordinateHistory = async (userId) => {
-      setLoading(true);
-      try {
-          const res = await api.get(`/history/subordinates/${userId}`);
-          groupAndSetTasks(res.data);
-          setViewMode('USER_SPECIFIC'); // Setăm modul specific
       } catch (err) { console.error(err); } 
       finally { setLoading(false); }
   };
@@ -74,10 +48,12 @@ const HistoryPage = () => {
            const projectsRes = await api.get('/projects');
            const projectsData = projectsRes.data;
            
+           // Luăm task-urile CLOSED pentru fiecare proiect
            const projectsWithTasks = await Promise.all(
              projectsData.map(async (p) => {
                 try {
                     const tRes = await api.get(`/projects/${p.id}/tasks`);
+                    // Filtrăm doar cele CLOSED
                     return { ...p, tasks: tRes.data.filter(t => t.status === 'CLOSED') };
                 } catch { return { ...p, tasks: [] }; }
              })
@@ -88,7 +64,6 @@ const HistoryPage = () => {
                if (proj.tasks.length > 0) groups[proj.name] = proj.tasks;
            });
            setGroupedTasks(groups);
-           setViewMode('DEFAULT'); // Setăm modul general
       } catch (err) { console.error(err); }
       finally { setLoading(false); }
   };
@@ -96,8 +71,13 @@ const HistoryPage = () => {
   // --- HELPER FUNCTIONS ---
 
   const groupAndSetTasks = (tasksList) => {
+      if(!Array.isArray(tasksList)) {
+          setGroupedTasks({});
+          return;
+      }
+
       const groups = tasksList.reduce((acc, task) => {
-        const projName = task.project?.name || 'Fără Proiect';
+        const projName = task.project?.name || 'Proiect Șters / Necunoscut';
         if (!acc[projName]) acc[projName] = [];
         acc[projName].push(task);
         return acc;
@@ -105,21 +85,33 @@ const HistoryPage = () => {
       setGroupedTasks(groups);
   };
 
-  const handleExecutantChange = (e) => {
-      const userId = e.target.value;
-      setSelectedExecutantId(userId);
-      if (userId === "") {
-          fetchGeneralHistoryForManager();
-      } else {
-          fetchSubordinateHistory(userId);
-      }
+  const formatDate = (dateString, onlyDate = false) => {
+      if (!dateString) return <span style={{color:'#ccc'}}>-</span>;
+      const options = onlyDate 
+        ? { day: '2-digit', month: '2-digit', year: '2-digit' }
+        : { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute:'2-digit' };
+      
+      return new Date(dateString).toLocaleString('ro-RO', options);
   };
 
-  const formatDate = (dateString) => {
-      if (!dateString) return <span style={{color:'#ccc'}}>-</span>;
-      return new Date(dateString).toLocaleString('ro-RO', { 
-          day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute:'2-digit' 
-      });
+  // Helper pentru a randa Deadline-ul cu verificare de întârziere
+  const renderDeadlineCell = (task) => {
+      if (!task.deadline) return <span style={{color:'#ccc'}}>-</span>;
+
+      const deadlineDate = new Date(task.deadline);
+      const completedDate = task.completedAt ? new Date(task.completedAt) : new Date();
+      
+      // Verificam daca a fost finalizat DUPA deadline (ignoram orele, comparam doar zilele pentru simplitate, sau timestamp full)
+      const isLate = completedDate > deadlineDate;
+
+      return (
+          <div style={{display: 'flex', flexDirection: 'column'}}>
+              <span style={{color: isLate ? '#d32f2f' : 'inherit', fontWeight: isLate ? 'bold' : 'normal'}}>
+                  {formatDate(task.deadline, true)}
+              </span>
+              {isLate && <span style={{fontSize: '0.7em', color: '#d32f2f', fontWeight: 'bold'}}>(Depășit)</span>}
+          </div>
+      );
   };
 
   // --- RENDER ---
@@ -128,26 +120,8 @@ const HistoryPage = () => {
     <div className="history-container">
       <header className="history-header">
         <div style={{flex: 1}}>
-            <h1>
-                {viewMode === 'USER_SPECIFIC' ? 'Fișă Activitate Individuală' : 'Istoric / Arhivă'}
-            </h1>
-            
-            {role === 'MANAGER' && (
-                <div style={{marginTop: '15px', display: 'flex', alignItems: 'center', gap: '10px'}}>
-                    <label style={{fontWeight: 'bold', color: 'var(--brand-main)'}}>Caută după angajat:</label>
-                    <select 
-                        value={selectedExecutantId} 
-                        onChange={handleExecutantChange}
-                        className="manager-executant-select-small"
-                        style={{maxWidth: '250px', height: '40px', padding: '5px'}}
-                    >
-                        <option value="">-- Toate Proiectele (General) --</option>
-                        {executants.map(user => (
-                            <option key={user.id} value={user.id}>{user.name}</option>
-                        ))}
-                    </select>
-                </div>
-            )}
+            <h1>Arhivă / Istoric Task-uri</h1>
+            {role === 'MANAGER' && <p style={{fontSize: '0.9rem', color: '#666'}}>Vizualizare completă a tuturor proiectelor închise.</p>}
         </div>
         
         <button className="btn-back" onClick={() => navigate(role === 'MANAGER' ? '/manager' : '/executant')}>
@@ -159,7 +133,7 @@ const HistoryPage = () => {
         {loading ? (
           <p>Se încarcă datele...</p>
         ) : Object.keys(groupedTasks).length === 0 ? (
-          <div className="empty-state">Nu există task-uri în istoric pentru selecția curentă.</div>
+          <div className="empty-state">Nu există task-uri în istoric.</div>
         ) : (
           Object.entries(groupedTasks).map(([projectName, tasks]) => (
             <div key={projectName} className="project-history-card">
@@ -167,28 +141,24 @@ const HistoryPage = () => {
               <div className="table-responsive">
                 <table className="history-table">
                   
-                  {/* --- HEADER --- */}
                   <thead>
                     <tr>
                       <th style={{width: '20%'}}>Task</th>
+                      <th style={{width: '12%'}}>Deadline</th> {/* COLOANĂ NOUĂ */}
                       
-                      {/* --- EXECUTANT VIEW --- */}
+                      {/* Coloane specifice Executant */}
                       {role === 'EXECUTANT' && (
                           <>
-                            <th style={{width: '40%'}}>Descriere</th>
-                            <th style={{width: '15%'}}>Status</th>
-                            <th style={{width: '25%'}}>Finalizat la</th>
+                            <th style={{width: '35%'}}>Descriere</th>
+                            <th style={{width: '10%'}}>Status</th>
+                            <th style={{width: '23%'}}>Finalizat la</th>
                           </>
                       )}
 
-                      {/* --- MANAGER VIEW --- */}
+                      {/* Coloane specifice Manager */}
                       {role === 'MANAGER' && (
                           <>
-                            {/* MODIFICARE: Arătăm coloana Executant DOAR dacă suntem pe modul DEFAULT (General) */}
-                            {viewMode === 'DEFAULT' && (
-                                <th style={{width: '15%'}}>Executant</th>
-                            )}
-
+                            <th style={{width: '15%'}}>Executant</th>
                             <th>Status</th>
                             <th>Alocat la</th>
                             <th>Finalizat la</th>
@@ -198,11 +168,13 @@ const HistoryPage = () => {
                     </tr>
                   </thead>
 
-                  {/* --- BODY --- */}
                   <tbody>
                     {tasks.map((task) => (
                       <tr key={task.id}>
                         <td><strong>{task.title}</strong></td>
+                        
+                        {/* CELULA DEADLINE (COMUNĂ) */}
+                        <td>{renderDeadlineCell(task)}</td>
 
                         {/* --- EXECUTANT ROWS --- */}
                         {role === 'EXECUTANT' && (
@@ -222,12 +194,9 @@ const HistoryPage = () => {
                         {/* --- MANAGER ROWS --- */}
                         {role === 'MANAGER' && (
                             <>
-                                {/* MODIFICARE: Celula Executant apare doar la modul DEFAULT */}
-                                {viewMode === 'DEFAULT' && (
-                                    <td style={{color: '#4a148c', fontWeight: '600'}}>
-                                        {task.assignedTo ? task.assignedTo.name : 'Necunoscut'}
-                                    </td>
-                                )}
+                                <td style={{color: '#4a148c', fontWeight: '600'}}>
+                                    {task.assignedTo ? task.assignedTo.name : <span style={{color:'red'}}>Neasignat</span>}
+                                </td>
 
                                 <td>
                                     <span className={`badge badge-${task.status.toLowerCase()}`}>{task.status}</span>

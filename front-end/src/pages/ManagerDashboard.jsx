@@ -6,12 +6,16 @@ import { useNavigate } from 'react-router-dom';
 const ManagerDashboard = () => {
   const [projects, setProjects] = useState([]);
   const [executants, setExecutants] = useState([]);
+  
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
+  
   const navigate = useNavigate();
+
   const [newTaskTitle, setNewTaskTitle] = useState({});
   const [newTaskDesc, setNewTaskDesc] = useState({});
+  const [newTaskDeadline, setNewTaskDeadline] = useState({});
   const [selectedUser, setSelectedUser] = useState({});
 
   useEffect(() => {
@@ -19,10 +23,19 @@ const ManagerDashboard = () => {
     fetchExecutants();
   }, []);
 
+  // --- FUNCȚIE AJUTĂTOARE PENTRU DATA MINIMĂ (AZI + ORA CURENTĂ) ---
+  const getMinDateTime = () => {
+      const now = new Date();
+      // Ajustăm fusul orar pentru a obține ora locală corectă în format ISO
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      return now.toISOString().slice(0, 16); // Returnează formatul "YYYY-MM-DDTHH:mm"
+  };
+
   const fetchProjects = async () => {
     try {
       const projectsResponse = await api.get('/projects');
       const projectsData = projectsResponse.data;
+      
       const projectsWithTasks = await Promise.all(
         projectsData.map(async (project) => {
           try {
@@ -54,23 +67,42 @@ const ManagerDashboard = () => {
     } catch (err) { setError('Eroare la crearea proiectului.'); }
   };
 
-  const handleDeleteProject = async (id, tasks) => {
-      if (window.confirm('Ești sigur că vrei să ștergi proiectul?')) {
+  const handleDeleteProject = async (id) => {
+      if (window.confirm('Ești sigur că vrei să ștergi proiectul? Toate task-urile vor fi șterse.')) {
           try {
               await api.delete(`/projects/${id}`);
               fetchProjects();
-          } catch (err) { alert("Eroare la ștergere."); }
+          } catch (err) { alert("Eroare la ștergere proiect."); }
       }
   };
 
   const handleCreateTask = async (projectId) => {
     const title = newTaskTitle[projectId];
     const desc = newTaskDesc[projectId];
-    if (!title || !desc) return alert("Atât titlul cât și descrierea sunt obligatorii!");
+    const deadline = newTaskDeadline[projectId];
+
+    if (!title || !deadline) return alert("Titlul și Deadline-ul sunt obligatorii!");
+
+    // --- VALIDARE DATĂ TRECUTĂ ---
+    const selectedDate = new Date(deadline);
+    const now = new Date();
+    
+    if (selectedDate < now) {
+        return alert("Nu poți seta un termen limită (deadline) în trecut!");
+    }
+    // ----------------------------
+    
     try {
-      await api.post(`/projects/${projectId}/tasks`, { title, description: desc });
+      await api.post(`/projects/${projectId}/tasks`, { 
+        title, 
+        description: desc, 
+        deadline: deadline 
+      });
+      
       setNewTaskTitle({ ...newTaskTitle, [projectId]: "" }); 
       setNewTaskDesc({ ...newTaskDesc, [projectId]: "" }); 
+      setNewTaskDeadline({ ...newTaskDeadline, [projectId]: "" });
+
       fetchProjects();
     } catch (err) { alert("Eroare la creare task."); }
   };
@@ -88,7 +120,7 @@ const ManagerDashboard = () => {
     try {
       await api.patch(`/tasks/${taskId}/close`);
       fetchProjects();
-    } catch (err) { alert("Doar task-urile COMPLETED pot fi închise!"); }
+    } catch (err) { alert("Eroare: Doar task-urile COMPLETED pot fi închise!"); }
   };
 
   const handleDeleteTask = async (taskId) => {
@@ -107,20 +139,49 @@ const ManagerDashboard = () => {
     navigate('/login');
   };
 
+  const renderDeadlineInfo = (task) => {
+      if (!task.deadline) return null;
+      
+      let styleClass = "deadline-normal";
+      
+      const formattedDate = new Date(task.deadline).toLocaleString('ro-RO', {
+          day: '2-digit', month: '2-digit', year: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+      });
+
+      let text = `📅 Termen: ${formattedDate} (${task.daysRemaining} zile)`;
+
+      if (task.status === 'COMPLETED' || task.status === 'CLOSED') {
+          return <div className="deadline-row deadline-finished">Finalizat (Termen: {formattedDate})</div>;
+      }
+
+      if (task.isOverdue) {
+          styleClass = "deadline-overdue";
+          text = `⚠️ Întârziat cu ${Math.abs(task.daysRemaining)} zile!`;
+      } else if (task.daysRemaining <= 1) {
+          styleClass = "deadline-urgent";
+          text = `🔥 Urgent: ${task.daysRemaining === 0 ? 'Azi!' : '1 zi rămasă!'}`;
+      }
+
+      return <div className={`deadline-row ${styleClass}`}>{text}</div>;
+  };
+
   return (
     <div className="manager-dashboard-container">
       <header className="manager-dashboard-header">
         <div>
             <h1>Manager Dashboard</h1>
         </div>
-        <button onClick={() => navigate('/history')} className="executant-btn-history">Arhiva</button>
-        <button onClick={handleLogout} className="manager-logout-btn manager-delete-btn">Log Out</button>
+        <div style={{display:'flex', gap:'10px'}}>
+            <button onClick={() => navigate('/history')} className="executant-btn-history">Arhiva</button>
+            <button onClick={handleLogout} className="manager-logout-btn manager-delete-btn">Log Out</button>
+        </div>
       </header>
 
       <section className="manager-new-project-section">
         <h2>Adaugă un Proiect Nou</h2>
         {error && <div className="manager-error-message">{error}</div>}
-        
+         
         <form onSubmit={handleCreateProject} className="manager-project-form">
           <input 
             type="text" 
@@ -155,48 +216,60 @@ const ManagerDashboard = () => {
               {project.tasks && project.tasks.length > 0 ? (
                 project.tasks.map(task => (
                   <div key={task.id} className="manager-task-card-item">
-                    <div className="manager-task-info">
-                      <strong>{task.title}</strong>
-                      {task.description && <p style={{fontSize:'0.85em', color:'#666', margin:'2px 0'}}>{task.description}</p>}
-                      <span className={`manager-status-badge manager-status-${task.status.toLowerCase()}`}>
-                        {task.status}
-                      </span>
+                    <div className="manager-task-title-row">
+                        <strong>{task.title}</strong>
+                        <span className={`manager-status-badge manager-status-${task.status.toLowerCase()}`}>
+                            {task.status}
+                        </span>
                     </div>
 
-                    <div className="manager-task-actions-row">
-                      {/* OPEN STATE */}
-                      {task.status === 'OPEN' && (
-                        <div className="manager-allocation-controls">
-                          <select 
-                            className="manager-executant-select-small"
-                            onChange={(e) => setSelectedUser({...selectedUser, [task.id]: e.target.value})}
-                            defaultValue=""
-                          >
-                            <option value="" disabled>Alege executant</option>
-                            {executants.map(u => (
-                              <option key={u.id} value={u.id}>{u.name}</option>
-                            ))}
-                          </select>
-                          <button className="manager-btn-small manager-btn-allocate" onClick={() => handleAllocate(task.id)}>Assign</button>
-                          <button className="manager-btn-small manager-btn-delete-small" onClick={() => handleDeleteTask(task.id)}>🗑️</button>
+                    <div className="manager-task-content-row">
+                        <div className="manager-task-description">
+                             {task.description || <em style={{color:'#999'}}>Fără descriere</em>}
                         </div>
-                      )}
-
-                      {/* PENDING STATE */}
-                      {task.status === 'PENDING' && (
-                        <div className="manager-allocation-controls">
-                           <small>Assigned to: <strong>{task.assignedTo?.name}</strong></small>
+                        
+                        <div className="manager-task-actions">
+                            {(task.status === 'OPEN' || task.status === 'PENDING') && (
+                                <>
+                                    <div className="manager-assign-wrapper">
+                                        <select 
+                                            className="manager-executant-select-small"
+                                            onChange={(e) => setSelectedUser({...selectedUser, [task.id]: e.target.value})}
+                                            defaultValue=""
+                                            value={selectedUser[task.id] || (task.assignedToId ? task.assignedToId : "")}
+                                        >
+                                            <option value="" disabled>
+                                                {task.assignedTo ? `${task.assignedTo.name}` : "Alege"}
+                                            </option>
+                                            {executants.map(u => (
+                                            <option key={u.id} value={u.id}>{u.name}</option>
+                                            ))}
+                                        </select>
+                                        <button className="manager-btn-small manager-btn-allocate" title="Assign" onClick={() => handleAllocate(task.id)}>
+                                            {task.status === 'OPEN' ? '➕' : '🔄'}
+                                        </button>
+                                    </div>
+                                    {task.status === 'OPEN' && (
+                                         <button className="manager-btn-small manager-btn-delete-small" title="Șterge Task" onClick={() => handleDeleteTask(task.id)}>🗑️</button>
+                                    )}
+                                </>
+                            )}
+                            {task.status === 'COMPLETED' && (
+                                <div className="manager-assign-wrapper" style={{width: '100%', justifyContent: 'flex-end'}}>
+                                    <span style={{fontSize:'0.75rem', color:'green', marginRight:'5px'}}>
+                                        by <b>{task.assignedTo?.name}</b>
+                                    </span>
+                                    <button className="manager-btn-small manager-btn-close-task" onClick={() => handleClose(task.id)}>
+                                        Închide ✅
+                                    </button>
+                                </div>
+                            )}
+                            {task.status === 'CLOSED' && (
+                                <button className="manager-btn-small manager-btn-delete-small" onClick={() => handleDeleteTask(task.id)}>🗑️</button>
+                            )}
                         </div>
-                      )}
-
-                      {/* COMPLETED STATE */}
-                      {task.status === 'COMPLETED' && (
-                        <div className="manager-allocation-controls">
-                          <button className="manager-btn-small manager-btn-close-task" onClick={() => handleClose(task.id)}>Close Task ✅</button>
-                          <button className="manager-btn-small manager-btn-delete-small" style={{marginLeft: '5px'}} onClick={() => handleDeleteTask(task.id)}>🗑️</button>
-                        </div>
-                      )}
                     </div>
+                    {renderDeadlineInfo(task)}
                   </div>
                 ))
               ) : (
@@ -205,29 +278,41 @@ const ManagerDashboard = () => {
             </div>
 
             <div className="manager-project-card-footer">
-                <div className="manager-add-task-box" style={{display: 'flex', flexDirection: 'column', gap: '5px', width: '100%'}}>
-                    <div style={{display: 'flex', gap: '5px'}}>
-                        <input 
-                            type="text" 
-                            placeholder="Titlu task..."
-                            value={newTaskTitle[project.id] || ''}
-                            onChange={(e) => setNewTaskTitle({...newTaskTitle, [project.id]: e.target.value})}
-                            style={{flex: 1}}
-                        />
-                        <button onClick={() => handleCreateTask(project.id)} style={{width:'40px'}}>+</button>
-                    </div>
+                
+                <div className="manager-add-task-box">
                     <input 
                         type="text" 
-                        placeholder="Descriere task (obligatoriu)..."
+                        placeholder="Titlu task..."
+                        value={newTaskTitle[project.id] || ''}
+                        onChange={(e) => setNewTaskTitle({...newTaskTitle, [project.id]: e.target.value})}
+                        className="manager-input-full"
+                    />
+
+                    <input 
+                        type="text" 
+                        placeholder="Descriere task..."
                         value={newTaskDesc[project.id] || ''}
                         onChange={(e) => setNewTaskDesc({...newTaskDesc, [project.id]: e.target.value})}
+                        className="manager-input-full"
                     />
+
+                    <div className="manager-add-task-row-bottom">
+                         <input 
+                            type="datetime-local" 
+                            /* AICI ESTE VALIDAREA HTML */
+                            min={getMinDateTime()} 
+                            value={newTaskDeadline[project.id] || ''}
+                            onChange={(e) => setNewTaskDeadline({...newTaskDeadline, [project.id]: e.target.value})}
+                            className="manager-input-date-full"
+                        />
+                        <button onClick={() => handleCreateTask(project.id)} className="manager-btn-add-task">+</button>
+                    </div>
                 </div>
 
                 <button 
                     className="manager-delete-btn manager-full-width"
                     style={{marginTop: '15px'}}
-                    onClick={() => handleDeleteProject(project.id, project.tasks || [])}
+                    onClick={() => handleDeleteProject(project.id)}
                 >
                     Șterge Proiect
                 </button>

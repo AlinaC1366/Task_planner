@@ -35,12 +35,6 @@
   font-weight: 700;
 }
 
-.manager-dashboard-header p {
-  color: var(--brand-main);
-  font-weight: 700;
-  margin: 0;
-}
-
 /* --- COMPONENTE GENERALE --- */
 .manager-error-message {
   background-color: #ffdada;
@@ -81,7 +75,6 @@
   flex: 1;
   min-width: 200px;
   height: 45px; 
-  margin: 0;
   padding: 0 15px;
   border: 1.5px solid var(--border-color);
   border-radius: 8px;
@@ -110,7 +103,7 @@
 /* --- GRID & CARDURI PROIECTE --- */
 .manager-projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 20px;
 }
 
@@ -134,7 +127,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .manager-project-card h3 {
@@ -155,154 +148,158 @@
 .manager-project-desc {
   color: #666;
   font-size: 0.9rem;
-  margin: 0;
-  min-height: 40px;
-  overflow-wrap: break-word;
-  word-break: break-word;    
-  hyphens: auto;            
+  margin: 0 0 10px 0;
+  line-height: 1.4;       
 }
 
 .manager-project-card-footer {
   margin-top: auto;
 }
 
-/* --- TASK LIST & TASK ITEMS --- */
+/* --- TASK LIST & TASK ITEMS (NOUL LAYOUT) --- */
 .manager-tasks-list-container {
-  margin: 15px 0;
+  margin: 10px 0;
   text-align: left;
   border-top: 1px solid #eee;
-  padding-top: 10px;
+  padding-top: 5px;
 }
 
 .manager-task-card-item {
   display: flex;
   flex-direction: column;
-  padding: 12px;
+  padding: 10px;
   border-bottom: 1px solid #f0f0f0;
   background-color: #fff;
   transition: background-color 0.2s;
+  gap: 6px; /* Spatiu intre randuri */
 }
 
 .manager-task-card-item:hover {
   background-color: #fafafa;
 }
 
-.manager-task-info {
-  display: flex;
-  flex-wrap: wrap;      
-  align-items: center;   
-  gap: 8px;          
-  width: 100%;
+/* ROW 1 (Acum la final): DEADLINE */
+.deadline-row {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  align-self: flex-start;
+  margin-top: 8px; /* Adaugat spatiu sus */
 }
 
-.manager-task-info strong {
+.deadline-normal { background-color: #e3f2fd; color: #1565c0; }
+.deadline-urgent { background-color: #fff3e0; color: #ef6c00; border: 1px solid #ffe0b2; }
+.deadline-overdue { background-color: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+.deadline-finished { color: #2e7d32; font-style: italic; background: none; padding-left: 0; }
+
+/* ROW 2 (Acum sus): TITLU + STATUS */
+.manager-task-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.manager-task-title-row strong {
   font-size: 1rem;
   color: var(--text-main);
-  order: 1;              
-  flex: 1;             
-  margin-right: 10px;
 }
 
-.manager-task-info .manager-status-badge {
-  order: 2;             
-  flex-shrink: 0;         
-  font-size: 0.75rem;    
-  padding: 4px 10px;
+.manager-status-badge {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.65rem;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
-.manager-task-info p {
-  order: 3;             
-  width: 100%;           
-  margin: 6px 0 0 0;   
+.manager-status-open { background-color: #28a745; color: white; }
+.manager-status-pending { background-color: #ffc107; color: black; }
+.manager-status-completed { background-color: #007bff; color: white; }
+.manager-status-closed { background-color: #6c757d; color: white; }
+
+/* ROW 3 (Acum la mijloc): DESCRIERE + ACTIUNI */
+.manager-task-content-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* Aliniem sus in caz ca descrierea e lunga */
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.manager-task-description {
+  flex: 1;
+  font-size: 0.85rem;
   color: #666;
-  font-size: 0.9rem;
-  line-height: 1.4;      
-  overflow-wrap: break-word; 
-  word-break: break-word;
+  line-height: 1.3;
+  overflow-wrap: break-word;
+}
+
+.manager-task-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.manager-assign-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 /* --- CONTROLS ALOCARE & INPUT-URI MICI --- */
-.manager-allocation-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px; 
-  margin-top: 10px;
-  width: 100%;
-}
-
 .manager-executant-select-small {
-  flex: 1;
-  height: 36px;
-  padding: 0 10px;
-  border: 1.5px solid var(--border-color);
-  border-radius: 6px;
-  background-color: white;
-  font-size: 0.85rem;
-  font-family: inherit;
-  color: var(--text-main);
-  outline: none;
-  cursor: pointer;
-  transition: border-color 0.2s ease;
-}
-
-.manager-executant-select-small:focus {
-  border-color: var(--brand-main);
+  width: 80px; /* Mai mic */
+  height: 28px;
+  padding: 0 4px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 0.75rem;
 }
 
 .manager-btn-small {
-  height: 36px;
+  height: 28px;
   border: none;
-  border-radius: 6px;
-  font-size: 0.8rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  padding: 0 12px;
-}
-
-.manager-btn-small:active {
-  transform: scale(0.96);
+  padding: 0 8px;
 }
 
 .manager-btn-allocate {
   background-color: var(--brand-main);
   color: white;
 }
-.manager-btn-allocate:hover {
-  opacity: 0.9;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
 
 .manager-btn-close-task {
-  background-color: #28a745;
+  background-color: #007bff;
   color: white;
-  flex: 1;
-}
-.manager-btn-close-task:hover {
-  background-color: #218838;
+  font-size: 0.7rem;
 }
 
 .manager-btn-delete-small {
-  background-color: #ffebee;
+  background-color: transparent;
   color: #d32f2f;
-  width: 36px;
+  width: 28px;
   padding: 0;
   font-size: 1rem;
+  border: 1px solid #ffebee;
 }
 .manager-btn-delete-small:hover {
-  background-color: #d32f2f;
-  color: white;
+  background-color: #ffebee;
 }
 
 /* --- INPUT CREARE TASK RAPID --- */
 .manager-add-task-box {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
   width: 100%;
   margin: 15px 0;
   padding-top: 15px;
@@ -327,29 +324,7 @@
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
-  font-size: 1.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
-.manager-add-task-box button:hover {
-  background: var(--brand-secondary);
-}
-
-/* --- STATUS BADGES --- */
-.manager-status-badge {
-  padding: 3px 8px;
-  border-radius: 12px;
-  font-size: 0.7rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  margin-left: 10px;
-}
-
-.manager-status-open { background-color: #28a745; color: white; }
-.manager-status-pending { background-color: #ffc107; color: black; }
-.manager-status-completed { background-color: #28a745; color: white; }
-.manager-status-closed { background-color: #dc3545; color: white; }
 
 /* --- BUTOANE GENERALE --- */
 .manager-delete-btn {
@@ -361,7 +336,6 @@
   cursor: pointer; 
   font-size: 0.85rem;
   font-weight: 600;
-  transition: opacity 0.2s;
 }
 
 .manager-full-width {
@@ -369,31 +343,16 @@
   margin-top: 15px;
 }
 
-.manager-delete-btn:hover {
-  opacity: 0.9;
-}
-
 .manager-logout-btn {
   background-color: #d32f2f;
-  margin-top: 0;
-}
-.manager-logout-btn:hover {
-  background-color: #b71c1c !important;
 }
 
 /* --- RESPONSIVE --- */
 @media (max-width: 850px) {
-  .manager-project-form {
-    flex-direction: column;
-  }
+  .manager-project-form { flex-direction: column; }
+  .manager-projects-grid { grid-template-columns: 1fr; }
   
-  .manager-project-form input, 
-  .manager-project-form textarea,
-  .manager-project-form button {
-    width: 100%;
-  }
-
-  .manager-projects-grid {
-    grid-template-columns: 1fr;
-  }
+  /* Pe mobil punem actiunile sub descriere */
+  .manager-task-content-row { flex-direction: column; }
+  .manager-task-actions { width: 100%; justify-content: flex-end; margin-top: 5px; }
 }

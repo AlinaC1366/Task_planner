@@ -122,7 +122,6 @@ const AdminDashboard = () => {
           >
             <option value="MANAGER">MANAGER</option>
             <option value="EXECUTANT">EXECUTANT</option>
-            <option value="ADMIN">ADMIN</option>
           </select>
 
           {formData.role === 'EXECUTANT' && (
