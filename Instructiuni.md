@@ -1,11 +1,74 @@
-# 📘 Documentație Tehnică - Task Planner Backend
+# 📘 Documentație Tehnică - Task Planner 
 
-* **Context:** Aplicație de gestionare a task-urilor
-* **Componentă:** Server Backend (Node.js/Express/TypeScript)
+Această documentație acoperă instalarea, configurarea și utilizarea aplicației **Task Planner**. Aplicația este de tip **Full Stack**, compusă dintr-un server (Backend) și o interfață client (Frontend).
+
+# Structura Proiectului
+└── alinac1366-task_planner/
+    ├── README.md
+    ├── database.md
+    ├── Instructiuni.md
+    ├── routing.md
+    ├── back-end/
+    │   ├── package.json
+    │   ├── prisma/
+    │   │   ├── schema.prisma
+    │   │   ├── seed.js
+    │   │   └── migrations/
+    │   │       ├── migration_lock.toml
+    │   │       └── 20260111175113_add_deadline_to_tasks/
+    │   │           └── migration.sql
+    │   └── src/
+    │       ├── server.js
+    │       ├── controllers/
+    │       │   ├── auth.controller.js
+    │       │   ├── history.controller.js
+    │       │   ├── project.controller.js
+    │       │   ├── task.controller.js
+    │       │   └── user.controller.js
+    │       ├── middleware/
+    │       │   ├── auth.middleware.js
+    │       │   └── errorHandler.middleware.js
+    │       ├── routes/
+    │       │   ├── auth.routes.js
+    │       │   ├── history.routes.js
+    │       │   ├── project.routes.js
+    │       │   ├── task.routes.js
+    │       │   └── user.routes.js
+    │       └── services/
+    │           └── prisma.service.js
+    └── front-end/
+        ├── eslint.config.js
+        ├── index.html
+        ├── package.json
+        ├── vite.config.js
+        ├── src/
+        │   ├── App.jsx
+        │   ├── main.jsx
+        │   ├── pages/
+        │   │   ├── AdminDashboard.jsx
+        │   │   ├── ExecutantDashboard.jsx
+        │   │   ├── HistoryPage.jsx
+        │   │   ├── Login.jsx
+        │   │   └── ManagerDashboard.jsx
+        │   ├── services/
+        │   │   ├── api.js
+        │   │   └── authService.js
+        │   └── styles/
+        │       ├── AdminDashboard.css
+        │       ├── ExecutantDashboard.css
+        │       ├── HistoryPage.css
+        │       ├── Login.css
+        │       ├── ManagerDashboard.css
+        │       └── variables.css
+        └── .vite/
+            └── deps/
+                ├── _metadata.json
+                └── package.json
+
 
 ---
 
-## 📝 1. Descriere Generală
+# 📝 1. Descriere Generală
 
  Logica de server (API REST) pentru aplicația *Task Planner*. Sistemul este construit pe o arhitectură modulară, separând responsabilitățile între Rute, Controllere și Servicii, și utilizează o bază de date relațională (SQLite) gestionată prin ORM-ul Prisma.
 
@@ -26,7 +89,7 @@ Pentru rularea aplicației, mediul local trebuie să dispună de:
 
 ---
 
-## 🚀 3. Instalare și Configurare
+## 🚀 3. Instalare și Configurare BACKEND
 
 Deoarece fișierele de configurație și baza de date locală nu sunt stocate în repository din motive de securitate, este necesară configurarea manuală a mediului.
 
@@ -66,7 +129,7 @@ npx prisma db push
 
 ---
 
-## 🌱 4. Inițializare Date (Seeding)
+### 🌱 4. Inițializare Date (Seeding)
 
 La prima rulare, baza de date este goală. Pentru a facilita testarea, proiectul include un script de populare automată (```seeding```) care creează un cont de Administrator implicit.
 
@@ -84,7 +147,7 @@ Folosiți aceste date pentru a obține primul Token de acces prin ruta de Login.
 
 ---
 
-## ▶️ 5. Pornirea Aplicației
+### ▶️ 5. Pornirea Aplicației
 
 Pentru a porni serverul în modul de dezvoltare:
 
@@ -96,7 +159,37 @@ Serverul va fi activ la adresa: ``http://localhost:3000/api/v1```
 
 ---
 
-## 🗺️ 6. Documentație API (Rute Disponibile)
+## 🎨 Instalare și Configurare FRONTEND
+
+Interfața grafică construită cu React și Vite.
+
+### Pasul 1: Instalare dependințe
+Deschideți un al doilea terminal (lăsați backend-ul să ruleze în primul), navigați către frontend:
+
+```Bash
+cd front-end
+npm install
+```
+
+### Pasul 2: 
+Verificați fișierul ```front-end/src/services/api.js```. Asigurați-vă că baseURL este setat corect:
+
+```JavaScript
+const api = axios.create({
+  baseURL: 'http://localhost:3000/api/v1',
+});
+```
+
+### Pasul 3: Pornirea aplicatiei
+Porniți interfața React:
+
+```Bash
+npm run dev
+```
+
+Aplicația se va deschide în browser la adresa: http://localhost:5173
+
+# 🗺️ 6. Documentație API (Rute Disponibile)
 
 Toate endpoint-urile sunt prefixate cu ```/api/v1.```
 
@@ -171,3 +264,4 @@ Pentru a înțelege mai bine structura proiectului:
 **2. Baza de Date și Servicii:**
 * 🔌 **[Services](./back-end/src/services)** – Configurarea conexiunii la baza de date (Prisma Client).
 * 🗄️ **[Database Schema](./back-end/prisma/schema.prisma)** – Definirea tabelelor și a relațiilor dintre ele.
+```
